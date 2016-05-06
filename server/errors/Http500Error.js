@@ -1,10 +1,17 @@
 var util = require('util'),
     HttpError = require('errors/HttpError');
 
-function Http500Error(message, stack) {
-    var message = message ? 'Internal Server Error, ' + message : 'Internal Server Error';
-    this.stack = stack;
-    HttpError.apply(this, [500, message])
+
+/**
+ * Http 500 (Internal Server Error) exception class.
+ *
+ * @param internalCode {Number} Internal error code.
+ * @param internalMessage {Number} Internal message, detail about error.
+ * @param stack
+ * @constructor
+ */
+function Http500Error(internalCode, internalMessage, stack) {
+    HttpError.apply(this, [500, 'Internal Server Error', internalCode, internalMessage, stack]);
     Error.captureStackTrace(this, Http500Error);
 }
 

@@ -13,6 +13,7 @@
   "author": "andrei.radzetski",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.15.1",
     "ejs-locals": "^1.0.2",
     "express": "^4.13.4",
     "log4js": "^0.6.35",

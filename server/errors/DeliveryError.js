@@ -1,42 +1,41 @@
-var util = require('util'),
-    DeliveryError = require('errors/DeliveryError');
-
+var util = require('util');
 
 /**
- * Http exception class.
+ * Main exception class.
  *
- * @param code {Number} http status code.
  * @param message {String} General message.
  * @param internalCode {Number} Internal error code.
  * @param internalMessage {Number} Internal message, detail about error.
  * @param stack
  * @constructor
  */
-function HttpError(code, message, internalCode, internalMessage, stack) {
-    this.code = code;
-    this.message = message;
+function DeliveryError(message, internalCode, internalMessage, stack) {
     this.internalCode = internalCode;
+    this.message = message;
     this.internalMessage = internalMessage;
     this.stack = stack;
-    Error.captureStackTrace(this, HttpError);
+    Error.captureStackTrace(this, DeliveryError);
 }
 
-util.inherits(HttpError, DeliveryError);
+util.inherits(DeliveryError, Error);
 
-HttpError.prototype = {
+DeliveryError.prototype = {
 
-    name: 'HttpError',
+    name: 'DeliveryError',
+
+    toString: function(){
+        return this.stack ? this.stack : this.toString();
+    },
 
     description: function() {
         var description = "";
 
-        description += this.code ? this.code + ' ' : description;
-        description += this.message ? this.message + ': ' : description;
         description += this.internalCode ? this.internalCode + ' ' : description;
+        description += this.message ? (this.internalMessage ? this.message + ': ' : this.message + '.') : description;
         description += this.internalMessage ? this.internalMessage : description;
 
         return description;
     }
 };
 
-module.exports = HttpError;
+module.exports = DeliveryError;

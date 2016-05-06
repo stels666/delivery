@@ -1,13 +1,19 @@
 var express = require('express'),
+    bodyParser = require('body-parser'),
     engine = require('ejs-locals'),
     config = require('config'),
     Promise = require('promise'),
-    logger = require('lib/logger')(module);
+    logger = require('lib/logger')(module),
+    DeliveryError = require('errors/HttpError'),
     HttpError = require('errors/HttpError'),
+    Http400Error = require('errors/Http400Error'),
     Http404Error = require('errors/Http404Error'),
     Http500Error = require('errors/Http500Error'),
     app = express();
 
+function _defineControllers() {
+    require('controllers/auth')(app);
+}
 
 /**
  * Define middleware
@@ -20,7 +26,12 @@ function _defineMiddleware(dirname) {
     app.set('views', dirname + '/templates');
     app.set('view engine', 'ejs');
 
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+
     app.use(express.static(dirname + '/public'));
+
+    _defineControllers();
 
     app.use(_pageNotFound);
     app.use(_convertToHttpError);
@@ -35,7 +46,7 @@ function _defineMiddleware(dirname) {
  * @private
  */
 function _pageNotFound(req, res) {
-    throw new Http404Error(req.url);
+    throw new Http404Error(config.get('errors:pageNotFound'), 'Page "' + req.url + '" not found.');
 }
 
 
@@ -54,11 +65,16 @@ function _convertToHttpError(err, req, res, next) {
          * if error is instance of HttpError go to next middleware
          */
         next(err);
+    } else if(err instanceof DeliveryError) {
+        /*
+         * if error is instance of DeliveryError, convert to Http500Error
+         */
+        next(new Http500Error(err.internalCode, err.internalMessage, err.stack));
     } else {
         /*
-         * if error isn't instance of HttpError convert to Http500Error
+         * if error isn't instance of DeliveryError and HttpError convert to Http500Error
          */
-        next(new Http500Error(err.message, err.stack));
+        next(new Http500Error(config.get('errors:unknown'), err.message, err.stack));
     }
 }
 
@@ -73,20 +89,34 @@ function _convertToHttpError(err, req, res, next) {
  * @private
  */
 function _handleError(err, req, res, next) {
-    logger.error(err.toString());
 
-    var showStack = !(err instanceof Http404Error);
+    var showStack = !(err instanceof Http404Error || err instanceof Http400Error);
+    showStack ? logger.error(err.toString()) : logger.error(err.description());
 
     /*
      * Render html body
      */
-    res.render('error', {
+    res.render('error',
+    {
         code: err.code,
         message: err.message,
         header: config.get('project:name'),
+        detail: err.internalCode + ' ' + err.internalMessage,
         stack: err.stack,
         showStack: showStack
-    }, function(error, html) {
+    },
+
+    function(error, html) {
+
+        if(!err.internalCode) {
+            logger.warn('Error with unknown internal code, will set default (%s).', config.get('errors:unknown'));
+            res.setHeader('internalCode', config.get('errors:unknown'));
+        } else {
+            res.setHeader('internalCode', err.internalCode);
+        }
+
+        err.internalMessage ? res.setHeader('internalMessage', err.internalMessage) : '';
+
         res.status(err.code).send(html);
     });
 }
