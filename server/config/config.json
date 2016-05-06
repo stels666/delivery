@@ -1,0 +1,27 @@
+{
+  "project" : {
+    "name": "Delivery Server"
+  },
+
+  "server": {
+    "port": 3000,
+    "host": "127.0.0.1"
+  },
+
+  "log4js": {
+    "appenders": [
+      { "type": "console"},
+      { "type": "file", "filename": "logging.log" }
+    ]
+  },
+
+  "mongoose": {
+    "uri": "mongodb://localhost/test",
+    "options": {
+      "config": {
+        "autoIndex": false
+      }
+    }
+  }
+
+}

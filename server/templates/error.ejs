@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%=code%> <%=message%></title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body class="error">
+<header>
+    <h1><%=header%></h1>
+</header>
+<section>
+    <h2><%=code%> <%=message%></h2>
+
+    <%if (showStack) { %>
+        <div class="stack">
+            <%=stack%>
+        </div>
+    <% } %>
+</section>
+</body>
+</html>
