@@ -34,6 +34,7 @@
   "keys": {
     "tokenLength": 56,
     "tokenExpiresIn": 86400,
+    "saltWorkFactor": 9,
     "accessTokenMask": "{}.delivery.access.token",
     "refreshTokenMask": "{}.delivery.refresh.token",
     "clientIdMask": "{}.delivery.client.id",

@@ -13,6 +13,7 @@
   "author": "andrei.radzetski",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^0.8.6",
     "body-parser": "^1.15.1",
     "ejs-locals": "^1.0.2",
     "express": "^4.13.4",

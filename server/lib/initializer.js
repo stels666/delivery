@@ -4,8 +4,8 @@ var Promise = require('promise'),
 
 function _defaultUsers(models) {
      return [
-         new models.User({ email: 'admin@admin.com', firstName: 'admin', secondName: 'admin' }),
-         new models.User({ email: 'user@user.com', firstName: 'user', secondName: 'user' })
+         new models.User({ email: 'admin@admin.com', password: 'admin', firstName: 'admin', secondName: 'admin' }),
+         new models.User({ email: 'user@user.com', password: 'user', firstName: 'user', secondName: 'user' })
      ];
 }
 

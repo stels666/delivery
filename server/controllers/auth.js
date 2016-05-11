@@ -5,12 +5,13 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/auth', _processAuth);
+    app.get('/auth', _processGetAuth);
 };
 
 
 /**
  * Process auth request, there are 3 cases:
+ *
  *  1. Generate access token;
  *  2. Refresh access token;
  *  3. Validate access token.
@@ -21,14 +22,14 @@ module.exports = function(app) {
  * @param res
  * @private
  */
-function _processAuth(req, res) {
+function _processGetAuth(req, res) {
     switch(req.query.type) {
         case 'access_token':
-            return _processAuthAccessToken(req, res);
+            return _processGetAuthAccessToken(req, res);
         case 'refresh_token':
-            return _processAuthRefreshToken(req, res);
+            return _processGetAuthRefreshToken(req, res);
         case 'validate_token':
-            return _processAuthValidateToken(req, res);
+            return _processGetAuthValidateToken(req, res);
         default:
             throw new Http400Error(config.get('errors:missingParameters'), 'Parameter "type" is incorrect, available values: access_token, refresh_token, validate_token.');
     }
@@ -57,7 +58,7 @@ function _processAuth(req, res) {
  * @param res
  * @private
  */
-function _processAuthAccessToken(req, res) {
+function _processGetAuthAccessToken(req, res) {
 
     var missing = util.requires([
         { name: 'client_id', value: req.query.client_id},
@@ -95,7 +96,7 @@ function _processAuthAccessToken(req, res) {
  * @param res
  * @private
  */
-function _processAuthRefreshToken(req, res) {
+function _processGetAuthRefreshToken(req, res) {
 
     var missing = util.requires([
         { name: 'client_id', value: req.query.client_id},
@@ -132,7 +133,7 @@ function _processAuthRefreshToken(req, res) {
  * @param res
  * @private
  */
-function _processAuthValidateToken(req, res) {
+function _processGetAuthValidateToken(req, res) {
 
     var missing = util.requires([
         { name: 'access_token', value: req.query.access_token}
