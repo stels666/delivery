@@ -10,6 +10,7 @@ var mongoose = require('mongoose'),
  */
 function _define(){
     require('models/user');
+    require('models/application');
     require('models/token');
 }
 

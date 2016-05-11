@@ -31,12 +31,28 @@ function _defineMiddleware(dirname) {
 
     app.use(express.static(dirname + '/public'));
 
+    app.use(_watcher);
+
     _defineControllers();
 
     app.use(_pageNotFound);
     app.use(_convertToHttpError);
     app.use(_handleError);
 }
+
+/**
+ * Main middleware.
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @private
+ */
+function _watcher(req, res, next) {
+    logger.info('METHOD "%s", URL "%s"', req.method, req.path);
+    next();
+}
+
 
 /**
  * Page not found middleware.
@@ -46,7 +62,7 @@ function _defineMiddleware(dirname) {
  * @private
  */
 function _pageNotFound(req, res) {
-    throw new Http404Error(config.get('errors:pageNotFound'), 'Page "' + req.url + '" not found.');
+    throw new Http404Error(config.get('errors:pageNotFound'), 'Page "' + req.path + '" not found.');
 }
 
 
@@ -91,7 +107,7 @@ function _convertToHttpError(err, req, res, next) {
 function _handleError(err, req, res, next) {
 
     var showStack = !(err instanceof Http404Error || err instanceof Http400Error);
-    showStack ? logger.error(err.toString()) : logger.error(err.description());
+    showStack ? logger.error(err.stack) : logger.error(err.description());
 
     /*
      * Render html body

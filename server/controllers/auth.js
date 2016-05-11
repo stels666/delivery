@@ -1,6 +1,7 @@
 var Http400Error = require('errors/Http400Error'),
     util = require('lib/util'),
-    config = require('config');
+    config = require('config'),
+    tokenService = require('services/token');
 
 
 module.exports = function(app) {
@@ -69,11 +70,7 @@ function _processAuthAccessToken(req, res) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    res.json({
-        access_token: "1234567890tyfyqtd76qdfy",
-        expires_in: 3600,
-        refresh_token: "123456hvasvd56765asd7r"
-    });
+    res.json(tokenService.newToken({_id: 2}, {_id: 4})); //TODO: remove hard code
 }
 
 /**
@@ -146,6 +143,6 @@ function _processAuthValidateToken(req, res) {
     }
 
     res.json({
-        valid: true,
+        valid: true
     });
 }

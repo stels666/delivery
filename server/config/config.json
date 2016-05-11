@@ -26,9 +26,18 @@
 
   "errors": {
     "unknown": "500",
+    "invalidArguments": "1000",
     "missingParameters": "1001",
     "pageNotFound": "404"
+  },
 
+  "keys": {
+    "tokenLength": 56,
+    "tokenExpiresIn": 86400,
+    "accessTokenMask": "{}.delivery.access.token",
+    "refreshTokenMask": "{}.delivery.refresh.token",
+    "clientIdMask": "{}.delivery.client.id",
+    "clientSecretMask": "{}.delivery.client.secret"
   }
 
 }
