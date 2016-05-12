@@ -11,8 +11,16 @@ var util = require('util'),
  * @constructor
  */
 function Http400Error(internalCode, internalMessage, stack) {
-    HttpError.apply(this, [400, 'Bad Request', internalCode, internalMessage, stack]);
-    Error.captureStackTrace(this, Http400Error);
+
+    this.code = 400;
+    this.message = 'Bad Request';
+    this.internalCode = internalCode;
+    this.internalMessage = internalMessage;
+    this.stack = stack;
+
+    if(!stack) {
+        Error.captureStackTrace(this, Http400Error);
+    }
 }
 
 util.inherits(Http400Error, HttpError);

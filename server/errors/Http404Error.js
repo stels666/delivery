@@ -11,8 +11,16 @@ var util = require('util'),
  * @constructor
  */
 function Http404Error(internalCode, internalMessage, stack) {
-    HttpError.apply(this, [404, 'Not Found', internalCode, internalMessage, stack]);
-    Error.captureStackTrace(this, Http404Error);
+
+    this.code = 404;
+    this.message = 'Not Found';
+    this.internalCode = internalCode;
+    this.internalMessage = internalMessage;
+    this.stack = stack;
+
+    if(!stack) {
+        Error.captureStackTrace(this, Http404Error);
+    }
 }
 
 util.inherits(Http404Error, HttpError);

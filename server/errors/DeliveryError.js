@@ -10,11 +10,15 @@ var util = require('util');
  * @constructor
  */
 function DeliveryError(message, internalCode, internalMessage, stack) {
+
     this.internalCode = internalCode;
     this.message = message;
     this.internalMessage = internalMessage;
     this.stack = stack;
-    Error.captureStackTrace(this, DeliveryError);
+
+    if(!stack) {
+        Error.captureStackTrace(this, DeliveryError);
+    }
 }
 
 util.inherits(DeliveryError, Error);
