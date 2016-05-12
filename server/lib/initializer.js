@@ -36,6 +36,10 @@ function _defaultPermissions(models) {
     return permissions;
 }
 
+function _defaultApplications(models) {
+    return [models.Application.newInstance()];
+}
+
 /**
  * Save all entities to db.
  *
@@ -79,7 +83,8 @@ module.exports = {
 
         return Promise.all([
             _saveAll(permissions),
-            _saveAll(_defaultUsers(models, permissions))
+            _saveAll(_defaultUsers(models, permissions)),
+            _saveAll(_defaultApplications(models))
         ]);
     }
 };

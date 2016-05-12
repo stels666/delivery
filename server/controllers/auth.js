@@ -68,9 +68,7 @@ function _processGetAuthAccessToken(req, res, next) {
         { name: 'client_secret', value: req.query.client_secret},
         { name: 'username', value: req.query.username},
         { name: 'password', value: req.query.password}
-    ]),
-        user,
-        application;
+    ]), application, user;
 
     if(missing.length > 0) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
@@ -83,10 +81,26 @@ function _processGetAuthAccessToken(req, res, next) {
             } else if(!app.enabled) {
                 next(new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.'));
             }
-
             application = app;
+            return userService.getByEmail(req.query.username);
 
-            res.json(tokenService.createToken({_id: 2}, application));//TODO: remove hard code
+        })
+
+        .then(function(rawUser) {
+            if(!rawUser) {
+                next(new Http403Error(config.get('errors:userNotFound'), 'User not found.'));
+            } else if(!rawUser.enabled) {
+                next(new Http403Error(config.get('errors:userDisabled'), 'User disabled.'));
+            }
+            user = rawUser;
+            return user.comparePasswords(req.query.password);
+        })
+
+        .then(function(isMatch) {
+            if(!isMatch) {
+                next(new Http403Error(config.get('errors:incorrectUserPassword'), 'Incorrect user password.'));
+            }
+           res.json(tokenService.createToken(user, application).toResponse());
         })
 
         .catch(function(err) {

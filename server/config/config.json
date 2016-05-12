@@ -30,7 +30,10 @@
     "missingParameters": "1001",
     "pageNotFound": "404",
     "applicationNotFound": "1002",
-    "applicationDisabled": "1003"
+    "applicationDisabled": "1003",
+    "userNotFound": "1004",
+    "userDisabled": "1005",
+    "incorrectUserPassword": "1006"
   },
 
   "keys": {

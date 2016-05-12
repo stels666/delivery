@@ -6,7 +6,7 @@ var mongoose = require('mongoose'),
 properties = {
     clientId: { type: String, required: true, unique: true },
     clientSecret: { type: String, required: true, unique: true },
-    creationDate: { type: Date, default: Date.now, required: true },
+    creationDate: { type: Date, default: new Date(), required: true },
     enabled: { type: Boolean, default: true }
 };
 
@@ -34,7 +34,7 @@ schema.methods = {
 
         this.clientId = util.generateKey(2);
         this.clientSecret = util.generateKey(3);
-        this.creationDate = Date.new;
+        this.creationDate = new Date();
 
         return this;
     }

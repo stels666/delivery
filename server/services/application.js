@@ -12,8 +12,8 @@ module.exports = {
      */
     getByClientIdAndSecret: function(clientId, clientSecret){
         return new Promise(function(resolve, reject) {
-            Application.find({clientId: clientId, clientSecret: clientSecret}, function(err, app) {
-                err ? reject(err) : resolve(err);
+            Application.findOne({clientId: clientId, clientSecret: clientSecret}, function(err, app) {
+                err ? reject(err) : resolve(app);
             });
         });
     }

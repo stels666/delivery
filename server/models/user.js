@@ -11,7 +11,8 @@ properties = {
     permissions: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Permission'
-    }]
+    }],
+    enabled: { type: Boolean, default: true }
 };
 
 schema = new mongoose.Schema(properties);

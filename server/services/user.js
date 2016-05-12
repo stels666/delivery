@@ -35,5 +35,22 @@ module.exports = {
                 err ? reject(err) : resolve(user);
             });
         });
+    },
+
+    /**
+     * Get user by email.
+     *
+     * @param email {String}
+     * @returns {Promise}
+     */
+    getByEmail: function(email) {
+        return new Promise(function(resolve, reject) {
+            User.findOne({ email: email })
+                .populate('permissions')
+                .exec( function(err, user) {
+
+                    err ? reject(err) : resolve(user);
+                });
+        });
     }
 }
