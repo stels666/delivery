@@ -1,7 +1,10 @@
 var Http400Error = require('errors/Http400Error'),
+    Http403Error = require('errors/Http403Error'),
     util = require('lib/util'),
     config = require('config'),
-    tokenService = require('services/token');
+    tokenService = require('services/token'),
+    applicationService = require('services/application'),
+    userService = require('services/user');
 
 
 module.exports = function(app) {
@@ -22,14 +25,14 @@ module.exports = function(app) {
  * @param res
  * @private
  */
-function _processGetAuth(req, res) {
+function _processGetAuth(req, res, next) {
     switch(req.query.type) {
         case 'access_token':
-            return _processGetAuthAccessToken(req, res);
+            return _processGetAuthAccessToken(req, res, next);
         case 'refresh_token':
-            return _processGetAuthRefreshToken(req, res);
+            return _processGetAuthRefreshToken(req, res, next);
         case 'validate_token':
-            return _processGetAuthValidateToken(req, res);
+            return _processGetAuthValidateToken(req, res, next);
         default:
             throw new Http400Error(config.get('errors:missingParameters'), 'Parameter "type" is incorrect, available values: access_token, refresh_token, validate_token.');
     }
@@ -58,20 +61,37 @@ function _processGetAuth(req, res) {
  * @param res
  * @private
  */
-function _processGetAuthAccessToken(req, res) {
+function _processGetAuthAccessToken(req, res, next) {
 
     var missing = util.requires([
         { name: 'client_id', value: req.query.client_id},
         { name: 'client_secret', value: req.query.client_secret},
         { name: 'username', value: req.query.username},
         { name: 'password', value: req.query.password}
-    ]);
+    ]),
+        user,
+        application;
 
     if(missing.length > 0) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    res.json(tokenService.newToken({_id: 2}, {_id: 4})); //TODO: remove hard code
+    applicationService.getByClientIdAndSecret(req.query.client_id, req.query.client_secret)
+        .then(function(app){
+            if(!app) {
+                next(new Http403Error(config.get('errors:applicationNotFound'), 'Application not found.'));
+            } else if(!app.enabled) {
+                next(new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.'));
+            }
+
+            application = app;
+
+            res.json(tokenService.createToken({_id: 2}, application));//TODO: remove hard code
+        })
+
+        .catch(function(err) {
+            next(err);
+        });
 }
 
 /**

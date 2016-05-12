@@ -9,6 +9,7 @@ var express = require('express'),
     Http400Error = require('errors/Http400Error'),
     Http404Error = require('errors/Http404Error'),
     Http500Error = require('errors/Http500Error'),
+    Http403Error = require('errors/Http403Error'),
     app = express();
 
 function _defineControllers() {
@@ -107,7 +108,9 @@ function _convertToHttpError(err, req, res, next) {
  */
 function _handleError(err, req, res, next) {
 
-    var showStack = !(err instanceof Http404Error || err instanceof Http400Error);
+    var showStack = !(err instanceof Http404Error ||
+                        err instanceof Http400Error ||
+                        err instanceof Http403Error);
     showStack ? logger.error(err.stack) : logger.error(err.description());
 
     /*

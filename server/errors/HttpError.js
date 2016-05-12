@@ -13,12 +13,16 @@ var util = require('util'),
  * @constructor
  */
 function HttpError(code, message, internalCode, internalMessage, stack) {
+
     this.code = code;
     this.message = message;
     this.internalCode = internalCode;
     this.internalMessage = internalMessage;
     this.stack = stack;
-    Error.captureStackTrace(this, HttpError);
+
+    if(!stack) {
+        Error.captureStackTrace(this, HttpError);
+    }
 }
 
 util.inherits(HttpError, DeliveryError);

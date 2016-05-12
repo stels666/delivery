@@ -6,7 +6,8 @@ var mongoose = require('mongoose'),
 properties = {
     clientId: { type: String, required: true, unique: true },
     clientSecret: { type: String, required: true, unique: true },
-    creationDate: { type: Date, default: Date.now, required: true }
+    creationDate: { type: Date, default: Date.now, required: true },
+    enabled: { type: Boolean, default: true }
 };
 
 schema = new mongoose.Schema(properties);

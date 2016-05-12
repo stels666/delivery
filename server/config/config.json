@@ -28,7 +28,9 @@
     "unknown": "500",
     "invalidArguments": "1000",
     "missingParameters": "1001",
-    "pageNotFound": "404"
+    "pageNotFound": "404",
+    "applicationNotFound": "1002",
+    "applicationDisabled": "1003"
   },
 
   "keys": {
