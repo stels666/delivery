@@ -39,6 +39,11 @@
     "refreshTokenMask": "{}.delivery.refresh.token",
     "clientIdMask": "{}.delivery.client.id",
     "clientSecretMask": "{}.delivery.client.secret"
-  }
+  },
+
+  "permissions": [
+    { "key": "USER_GET", "description": "Get user(s) permission" },
+    { "key": "USER_GET_IF_OWNER", "description": "Get user(s) if owner permission" }
+  ]
 
 }

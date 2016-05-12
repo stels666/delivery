@@ -1,7 +1,6 @@
 var User = require('models/user'),
     config = require('config'),
-    Promise = require('Promise'),
-    baseObjectProjection = 'email password firstName secondName',
+    Promise = require('Promise')
     defaultSortColumn =  { sort : { firstName : 'asc'} };
 
 module.exports = {
@@ -13,7 +12,10 @@ module.exports = {
      */
     getAll: function() {
         return new Promise(function(resolve, reject) {
-            User.find({}, baseObjectProjection, defaultSortColumn, function(err, users){
+            User.find({}, null, defaultSortColumn)
+                .populate('permissions')
+                .exec(function(err, users) {
+
                 err ? reject(err) : resolve(users ? users : []);
             });
         });
@@ -26,7 +28,10 @@ module.exports = {
      */
     get: function(id) {
         return new Promise(function(resolve, reject) {
-            User.findById(id, baseObjectProjection, null, function(err, user){
+            User.findById(id)
+                .populate('permissions')
+                .exec( function(err, user) {
+
                 err ? reject(err) : resolve(user);
             });
         });

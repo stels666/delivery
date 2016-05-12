@@ -7,7 +7,11 @@ properties = {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     firstName: { type: String },
-    secondName: { type: String }
+    secondName: { type: String },
+    permissions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Permission'
+    }]
 };
 
 schema = new mongoose.Schema(properties);
@@ -53,6 +57,43 @@ schema.methods = {
      */
     comparePasswords: function(pass) {
         return util.compareHashed(pass, this.password);
+    },
+
+    /**
+     * Add permissions to list.
+     *
+     * @param permissions {Array<Permission>}
+     */
+    addPermissions: function(permissions) {
+        var _this = this;
+
+        permissions.forEach(function(item){
+            _this.addPermission(item);
+        });
+    },
+
+    /**
+     * Add permission to list
+     *
+     * @param permission {Permission}
+     */
+    addPermission: function(permission) {
+        this.permissions.push(permission._id);
+    },
+
+    /**
+     * Check access by permission key.
+     *
+     * @param key
+     * @returns {boolean}
+     */
+    isAccessAllowed: function(key) {
+        for(var i = 0, max = this.permissions.length; i < max; i += 1 ){
+            if(this.permissions[i].key === key) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

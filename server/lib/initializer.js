@@ -1,12 +1,27 @@
 var Promise = require('promise'),
-    logger = require('lib/logger')(module);
+    logger = require('lib/logger')(module),
+    config = require('config');
 
 
-function _defaultUsers(models) {
-     return [
-         new models.User({ email: 'admin@admin.com', password: 'admin', firstName: 'admin', secondName: 'admin' }),
-         new models.User({ email: 'user@user.com', password: 'user', firstName: 'user', secondName: 'user' })
-     ];
+function _defaultUsers(models, permissions) {
+
+    var admin = new models.User({ email: 'admin@admin.com', password: 'admin', firstName: 'admin', secondName: 'admin' });
+
+    admin.addPermissions(permissions);
+
+    return [admin];
+}
+
+function _defaultPermissions(models) {
+
+    var permissions = [],
+        raw = config.get('permissions');
+
+    for(var i = 0, max = raw.length; i < max; i += 1) {
+        permissions.push(new models.Permission({ key: raw[i].key, description: raw[i].description }));
+    };
+
+    return permissions;
 }
 
 /**
@@ -47,8 +62,12 @@ module.exports = {
         }
 
         logger.info('Try to save default entities to db.');
+
+        var permissions = _defaultPermissions(models);
+
         return Promise.all([
-            _saveAll(_defaultUsers(models))
+            _saveAll(permissions),
+            _saveAll(_defaultUsers(models, permissions))
         ]);
     }
 };
