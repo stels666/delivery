@@ -11,8 +11,16 @@ var util = require('util'),
  * @constructor
  */
 function Http500Error(internalCode, internalMessage, stack) {
-    HttpError.apply(this, [500, 'Internal Server Error', internalCode, internalMessage, stack]);
-    Error.captureStackTrace(this, Http500Error);
+
+    this.code = 500;
+    this.message = 'Internal Server Error';
+    this.internalCode = internalCode;
+    this.internalMessage = internalMessage;
+    this.stack = stack;
+
+    if(!stack) {
+        Error.captureStackTrace(this, Http500Error);
+    }
 }
 
 util.inherits(Http500Error, HttpError);

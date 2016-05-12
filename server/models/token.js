@@ -25,6 +25,26 @@ properties = {
 
 schema = new mongoose.Schema(properties);
 
+schema.statics = {
+
+    /**
+     *
+     * @param user
+     * @param application
+     * @returns {Token}
+     */
+    newInstance: function(user, application) {
+
+        if((user == null && typeof user !== 'object') ||
+            (application == null && typeof application !== 'object')) {
+
+            return;
+        }
+
+        return new this({ userId: user._sid, applicationId: application._id }).fill();
+    }
+};
+
 schema.methods = {
 
     /**

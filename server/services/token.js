@@ -1,22 +1,13 @@
-var Token = require('models/token'),
-    config = require('config'),
-    Http500Error = require('errors/Http500Error');
+var Token = require('models/token');
 
 module.exports = {
 
     /**
-     * Get new filled token.
+     * Create new filled token.
      *
      * @param user {User}
      */
-    newToken: function(user, application) {
-
-        if((user == null && typeof user !== 'object') ||
-            (application == null && typeof application !== 'object')) {
-
-            throw new Http500Error(config.get('errors:invalidArguments'), 'Invalid arguments.');
-        }
-
-        return new Token({ userId: user._sid, applicationId: application._id }).fill();
+    createToken: function(user, application) {
+        return Token.newInstance(user, application);
     }
 }

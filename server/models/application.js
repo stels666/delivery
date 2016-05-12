@@ -11,6 +11,17 @@ properties = {
 
 schema = new mongoose.Schema(properties);
 
+schema.statics = {
+
+    /**
+     *
+     * @returns {Application}
+     */
+    newInstance: function() {
+        return new this().fill();
+    }
+};
+
 schema.methods = {
 
     /**

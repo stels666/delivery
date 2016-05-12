@@ -1,6 +1,6 @@
 var User = require('models/user'),
     config = require('config'),
-    Promise = require('Promise')
+    Promise = require('Promise'),
     defaultSortColumn =  { sort : { firstName : 'asc'} };
 
 module.exports = {
