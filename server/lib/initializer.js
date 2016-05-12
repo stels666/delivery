@@ -2,7 +2,13 @@ var Promise = require('promise'),
     logger = require('lib/logger')(module),
     config = require('config');
 
-
+/**
+ *
+ * @param models
+ * @param permissions
+ * @returns {User[]}
+ * @private
+ */
 function _defaultUsers(models, permissions) {
 
     var admin = new models.User({ email: 'admin@admin.com', password: 'admin', firstName: 'admin', secondName: 'admin' });
@@ -12,6 +18,12 @@ function _defaultUsers(models, permissions) {
     return [admin];
 }
 
+/**
+ *
+ * @param models
+ * @returns {Array}
+ * @private
+ */
 function _defaultPermissions(models) {
 
     var permissions = [],

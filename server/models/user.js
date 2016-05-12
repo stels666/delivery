@@ -62,7 +62,7 @@ schema.methods = {
     /**
      * Add permissions to list.
      *
-     * @param permissions {Array<Permission>}
+     * @param permissions {Permission[]}
      */
     addPermissions: function(permissions) {
         var _this = this;
