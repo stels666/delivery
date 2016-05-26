@@ -36,7 +36,8 @@
     "incorrectUserPassword": "1006",
     "invalidAccessToken": "1007",
     "canNotCreateToken": "1008",
-    "tokenNotFound": "1009"
+    "tokenNotFound": "1009",
+    "accessDenied": "1010"
   },
 
   "keys": {

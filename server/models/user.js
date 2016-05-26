@@ -1,5 +1,6 @@
 var mongoose = require('mongoose'),
     util = require('lib/util'),
+    Promise = require('Promise'),
     schema,
     properties;
 
@@ -86,15 +87,18 @@ schema.methods = {
      * Check access by permission key.
      *
      * @param key
-     * @returns {boolean}
+     * @returns {Promise}
      */
-    isAccessAllowed: function(key) {
-        for(var i = 0, max = this.permissions.length; i < max; i += 1 ){
-            if(this.permissions[i].key === key) {
-                return true;
+    isAccessAllowed: function(permissions) {
+        var _this = this;
+        return new Promise(function(resolve, reject) {
+            for(var i = 0, max = _this.permissions.length; i < max; i += 1 ){
+                if(_this.permissions[i].key === permissions) {
+                    resolve(true);
+                }
             }
-        }
-        return false;
+            resolve(false);
+        });
     }
 }
 

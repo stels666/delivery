@@ -1,6 +1,5 @@
 var Http400Error = require('errors/Http400Error'),
     Http403Error = require('errors/Http403Error'),
-    Http500Error = require('errors/Http500Error'),
     util = require('lib/util'),
     config = require('config'),
     tokenService = require('services/token'),
@@ -97,6 +96,50 @@ module.exports = {
                     reject(error);
                 })
         });
-    }
+    },
 
+
+    /**
+     * Token -> Application -> User -> Permission
+     *
+     * @param accessToken
+     * @param permissions
+     */
+    accessTokenPermissionChain: function(accessToken, permissions) {
+        var _this = this,
+            result;
+
+        return new Promise(function(resolve, reject) {
+            Promise.resolve(accessToken)
+
+                .then(function(_accessToken) {
+                    if(!_accessToken) {
+                        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: accessToken.');
+                    }
+
+                    return tokenService.getTokenByAccessToken(_accessToken);
+                })
+
+                .then(function(_token) {
+                    return _this.tokenChain(_token);
+                })
+
+                .then(function(_result) {
+                    result = _result;
+                    return result.user.isAccessAllowed(permissions);
+                })
+
+                .then(function(allowed) {
+                    if(!allowed) {
+                        throw new Http403Error(config.get('errors:accessDenied'), 'Access denied.');
+                    }
+
+                    resolve(result);
+                })
+
+                .catch(function(error) {
+                    reject(error);
+                })
+        });
+    }
 };

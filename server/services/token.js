@@ -4,14 +4,39 @@ var Token = require('models/token'),
 module.exports = {
 
     /**
+     * Get tokens by id.
+     *
+     * @returns {Promise}
+     */
+    get: function(id) {
+        return new Promise(function(resolve, reject) {
+            Token.findById(id, function(err, obj) {
+                err ? reject(err) : resolve(obj);
+            });
+        });
+    },
+
+    /**
+     * Get all tokens.
+     *
+     * @returns {Promise}
+     */
+    getAll: function() {
+        return new Promise(function(resolve, reject) {
+            Token.find({}, function(err, objs) {
+                err ? reject(err) : resolve(objs ? objs : []);
+            });
+        });
+    },
+
+    /**
      * Create new filled token.
      *
      * @param user {User}
      */
     createToken: function (user, application) {
         return new Promise(function(resolve, reject) {
-            Token.newInstance(user, application).save(function(err, obj){
-                console.log(arguments);
+            Token.newInstance(user, application).save(function(err, obj) {
                 err ? reject(err) : resolve(obj);
             });
         });

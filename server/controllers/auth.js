@@ -5,11 +5,13 @@ var Http400Error = require('errors/Http400Error'),
     config = require('config'),
     tokenService = require('services/token'),
     applicationService = require('services/application'),
-    userService = require('services/user');
+    userService = require('services/user'),
+    manager = require('controllers/manager');
 
 
 module.exports = function(app) {
-    app.get('/auth', _processGetAuth);
+    app.get('/auth', _processAuth);
+    app.get('/auth/:id', _processGetToken);
 };
 
 
@@ -26,7 +28,7 @@ module.exports = function(app) {
  * @param res
  * @private
  */
-function _processGetAuth(req, res, next) {
+function _processAuth(req, res, next) {
     switch(req.query.type) {
         case 'access_token':
             return _processGetAuthAccessToken(req, res, next);
@@ -39,10 +41,32 @@ function _processGetAuth(req, res, next) {
     }
 }
 
+
+/**
+ * Process get auth tokens request, 2 cases:
+ *  1. Get single token by id or accessToken;
+ *  2. Get all tokens.
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @private
+ */
+function _processGetToken(req, res, next) {
+    if(req.params.id === 'all') {
+        return _processGetAllTokens(req, res, next);
+    } else if(req.params.id != null && req.params.id.trim().length > 0) {
+        return _processGetSingleToken(req, res, next);
+    } else {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Route parameter "id" is incorrect, available values: all or id of token.');
+    }
+}
+
+
 /**
  * Generate access token service.
  *
- * Request query:
+ * Request query (/auth?type=access_token&client_id=EXAMPLE&client_secret=EXAMPLE&username=EXAMPLE&password=EXAMPLE):
  * <pre>
  *  client_id - required;
  *  client_secret - required;
@@ -53,9 +77,7 @@ function _processGetAuth(req, res, next) {
  * Response:
  * <pre><code>
  * {
- *      accessToken: string,
- *      expiresIn: number,
- *      refreshToken: string
+ *      Token
  *  }
  * </code></pre>
  * @param req
@@ -124,10 +146,11 @@ function _processGetAuthAccessToken(req, res, next) {
         });
 }
 
+
 /**
  * Refresh access token service.
  *
- * Request query:
+ * Request query (/auth?type=refresh_token&client_id=EXAMPLE&client_secret=EXAMPLE&refresh_token=EXAMPLE):
  * <pre>
  *  client_id - required;
  *  client_secret - required;
@@ -137,9 +160,7 @@ function _processGetAuthAccessToken(req, res, next) {
  * Response:
  * <pre><code>
  * {
- *      accessToken: string,
- *      expiresIn: number,
- *      refreshToken: string
+ *      Token
  *  }
  * </code></pre>
  * @param req
@@ -211,10 +232,11 @@ function _processGetAuthRefreshToken(req, res, next) {
         });
 }
 
+
 /**
  * Validate access token service.
  *
- * Request query:
+ * Request query (/auth?type=validate_token&access_token=EXAMPLE):
  * <pre>
  *  access_token - required, current access token to validate.
  * </pre>
@@ -274,6 +296,98 @@ function _processGetAuthValidateToken(req, res, next) {
             res.json({
                 valid: !token.isExpired()
             });
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
+}
+
+
+/**
+ * Get all access token service.
+ *
+ * Request query (auth/all?access_token=EXAMPLE>):
+ * <pre>
+ *  access_token - required, current access token to validate.
+ * </pre>
+ *
+ * Response:
+ * <pre><code>
+ * [
+ *      ...
+ *      Token,
+ *      ...
+ *  ]
+ * </code></pre>
+ * @param req
+ * @param res
+ * @private
+ */
+function _processGetAllTokens(req, res, next) {
+    var missing = util.requires([
+        { name: 'access_token', value: req.query.access_token }
+    ]), application;
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    manager.accessTokenPermissionChain(req.query.access_token, 'USER_GET')
+
+        .then(function(_result) {
+            application = _result.application;
+            return tokenService.getAll();
+        })
+
+        .then(function(_tokens){
+            res.json(util.listToResponse(_tokens, application.native));
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
+}
+
+
+/**
+ * Get all access token service.
+ *
+ * Request query (auth/EXAMPLE?access_token=EXAMPLE):
+ * <pre>
+ *  id - required, internal id
+ *  access_token - required, current access token to validate.
+ * </pre>
+ *
+ * Response:
+ * <pre><code>
+ * {
+ *      Token
+ *  }
+ * </code></pre>
+ * @param req
+ * @param res
+ * @private
+ */
+function _processGetSingleToken(req, res, next) {
+    var missing = util.requires([
+        { name: 'id', value: req.params.id},
+        { name: 'access_token', value: req.query.access_token }
+    ]), application;
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    manager.accessTokenChain(req.query.access_token)
+
+        .then(function(_result) {
+            application = _result.application;
+            return tokenService.get(req.params.id);
+        })
+
+        .then(function(_token){
+            res.json(_token.toResponse(application.native));
         })
 
         .catch(function(error) {

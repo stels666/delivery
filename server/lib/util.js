@@ -8,6 +8,24 @@ var randtoken = require('rand-token'),
 module.exports = {
 
     /**
+     * Convert list objects to response.
+     * @param list {Array}
+     * @param full {Boolean}
+     * @returns {Array}
+     */
+    listToResponse: function(list, full) {
+        var resp = [];
+
+        for(var i = 0, max = list.length; i < max; i += 1) {
+            if(list[i].toResponse != null && typeof list[i].toResponse === 'function') {
+                resp.push(list[i].toResponse(full));
+            }
+        }
+
+        return resp;
+    },
+
+    /**
      * Validate parameters, check if parameter is null.
      *
      * @param parameters
