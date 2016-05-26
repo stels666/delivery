@@ -1,5 +1,6 @@
 var Http400Error = require('errors/Http400Error'),
     Http403Error = require('errors/Http403Error'),
+    Http500Error = require('errors/Http500Error'),
     util = require('lib/util'),
     config = require('config'),
     tokenService = require('services/token'),
@@ -52,9 +53,9 @@ function _processGetAuth(req, res, next) {
  * Response:
  * <pre><code>
  * {
- *      access_token: string,
- *      expires_in: number,
- *      refresh_token: string
+ *      accessToken: string,
+ *      expiresIn: number,
+ *      refreshToken: string
  *  }
  * </code></pre>
  * @param req
@@ -75,32 +76,47 @@ function _processGetAuthAccessToken(req, res, next) {
     }
 
     applicationService.getByClientIdAndSecret(req.query.client_id, req.query.client_secret)
-        .then(function(app){
-            if(!app) {
-                next(new Http403Error(config.get('errors:applicationNotFound'), 'Application not found.'));
-            } else if(!app.enabled) {
-                next(new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.'));
-            }
-            application = app;
-            return userService.getByEmail(req.query.username);
+        .then(function(_application){
 
+            if(!_application) {
+                throw new Http403Error(config.get('errors:applicationNotFound'), 'Application not found.');
+            }
+
+            if(!_application.enabled) {
+                throw new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.');
+            }
+
+            application = _application;
+            return userService.getByEmail(req.query.username);
         })
 
-        .then(function(rawUser) {
-            if(!rawUser) {
-                next(new Http403Error(config.get('errors:userNotFound'), 'User not found.'));
-            } else if(!rawUser.enabled) {
-                next(new Http403Error(config.get('errors:userDisabled'), 'User disabled.'));
+        .then(function(_user) {
+            if(!_user) {
+                throw new Http403Error(config.get('errors:userNotFound'), 'User not found.');
             }
-            user = rawUser;
+
+            if(!_user.enabled) {
+                throw new Http403Error(config.get('errors:userDisabled'), 'User disabled.');
+            }
+
+            user = _user;
             return user.comparePasswords(req.query.password);
         })
 
-        .then(function(isMatch) {
-            if(!isMatch) {
-                next(new Http403Error(config.get('errors:incorrectUserPassword'), 'Incorrect user password.'));
+        .then(function(match) {
+            if(!match) {
+                throw new Http403Error(config.get('errors:incorrectUserPassword'), 'Incorrect user password.');
             }
-           res.json(tokenService.createToken(user, application).toResponse());
+
+            return tokenService.createToken(user, application);
+        })
+
+        .then(function(token) {
+            if(!token) {
+                throw new Http500Error(config.get('errors:canNotCreateToken'), 'Can not create token.');
+            }
+
+            res.json(token.toResponse(application.native));
         })
 
         .catch(function(err) {
@@ -121,9 +137,9 @@ function _processGetAuthAccessToken(req, res, next) {
  * Response:
  * <pre><code>
  * {
- *      access_token: string,
- *      expires_in: number,
- *      refresh_token: string
+ *      accessToken: string,
+ *      expiresIn: number,
+ *      refreshToken: string
  *  }
  * </code></pre>
  * @param req
@@ -136,17 +152,59 @@ function _processGetAuthRefreshToken(req, res) {
         { name: 'client_id', value: req.query.client_id},
         { name: 'client_secret', value: req.query.client_secret},
         { name: 'refresh_token', value: req.query.refresh_token}
-    ]);
+    ]), oldToken, application;
 
     if(missing.length > 0) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    res.json({
-        access_token: "1234567890tyfyqtd76qdfy",
-        expires_in: 3600,
-        refresh_token: "123456hvasvd56765asd7r"
-    });
+    tokenService.getTokenByRefreshToken(req.query.refresh_token)
+        .then(function(_token) {
+            if(!_token) {
+                throw new Http403Error(config.get('errors:invalidAccessToken'), 'Invalid access token.');
+            }
+
+            oldToken = _token;
+            return applicationService.getByClientIdAndSecret(req.query.client_id, req.query.client_secret);
+        })
+
+        .then(function(_application){
+
+            if(!_application) {
+                throw new Http403Error(config.get('errors:applicationNotFound'), 'Application not found.');
+            }
+
+            if(!_application.enabled) {
+                throw new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.');
+            }
+
+            application = _application;
+            return userService.get(oldToken.userId);
+        })
+
+        .then(function(_user) {
+            if(!_user) {
+                throw new Http403Error(config.get('errors:userNotFound'), 'User not found.');
+            }
+
+            if(!_user.enabled) {
+                throw new Http403Error(config.get('errors:userDisabled'), 'User disabled.');
+            }
+
+            return tokenService.createToken(_user, application);
+        })
+
+        .then(function(_token) {
+            if(!_token) {
+                throw new Http500Error(config.get('errors:canNotCreateToken'), 'Can not create token.');
+            }
+
+            res.json(_token.toResponse(application.native));
+        })
+
+        .catch(function(err) {
+            next(err);
+        });
 }
 
 /**

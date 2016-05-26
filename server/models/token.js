@@ -41,7 +41,7 @@ schema.statics = {
             return;
         }
 
-        return new this({ userId: user._sid, applicationId: application._id }).fill();
+        return new this({ userId: user._id, applicationId: application._id }).fill();
     }
 };
 
@@ -56,7 +56,7 @@ schema.methods = {
 
         this.accessToken = util.generateKey(0);
         this.refreshToken = util.generateKey(1);
-        this.creationDate = Date.new;
+        this.creationDate = new Date();
         this.expiresIn = config.get('keys:tokenExpiresIn');
 
         return this;
@@ -66,19 +66,27 @@ schema.methods = {
     /**
      * Get json response form.
      *
-     * @returns {{access_token: string, expires_in: number, refresh_token: string}}
+     * @returns {{accessToken: string, expiresIn: number, refreshToken: string}}
      */
-    toResponse: function() {
-        return {
-            access_token: this.accessToken,
-            expires_in: this.expiresIn,
-            refresh_token: this.refreshToken
+    toResponse: function(full) {
+        var response = {
+            accessToken: this.accessToken,
+            expiresIn: this.expiresIn,
+            refreshToken: this.refreshToken
         };
+
+        if(full) {
+            response.id = this._id;
+            response.creationDate = this.creationDate;
+            response.valid = !this.isExpired();
+        }
+
+        return response;
     },
 
 
     /**
-     * Expiries checking
+     * Expires checking
      *
      * @returns {boolean}
      */
@@ -86,7 +94,7 @@ schema.methods = {
 
         var startTime = this.creationDate.getTime(),
             finishTime = startTime + this.expiresIn * 1000,
-            currentTime = Date().new.getTime();
+            currentTime = new Date().getTime();
 
         return currentTime > finishTime;
     }

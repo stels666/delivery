@@ -33,11 +33,13 @@
     "applicationDisabled": "1003",
     "userNotFound": "1004",
     "userDisabled": "1005",
-    "incorrectUserPassword": "1006"
+    "incorrectUserPassword": "1006",
+    "invalidAccessToken": "1007",
+    "canNotCreateToken": "1008"
   },
 
   "keys": {
-    "tokenLength": 56,
+    "tokenLength": 3,
     "tokenExpiresIn": 86400,
     "saltWorkFactor": 9,
     "accessTokenMask": "{}.delivery.access.token",

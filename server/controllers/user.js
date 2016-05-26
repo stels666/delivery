@@ -1,8 +1,10 @@
 var Http400Error = require('errors/Http400Error'),
+    Http403Error = require('errors/Http403Error'),
     config = require('config'),
     util = require('lib/util'),
     logger = require('lib/logger')(module),
-    userService = require('services/user');
+    userService = require('services/user'),
+    tokenService = require('services/token');
 
 module.exports = function(app) {
     app.get('/user/:id', _processGetUser);
@@ -47,7 +49,8 @@ function _processGetUser(req, res, next) {
 function _processGetSingleUser(req, res, next) {
 
     var missing = util.requires([
-        { name: 'id', value: req.params.id}
+        { name: 'id', value: req.params.id},
+        { name: 'access_token', value: req.query.access_token}
     ]);
 
     if(missing.length > 0) {
@@ -83,10 +86,33 @@ function _processGetSingleUser(req, res, next) {
  * @private
  */
 function _processGetAllUser(req, res, next) {
-    userService.getAll().then(function(users){
-        res.json(users);
-    }, function(error) {
-        logger.error(error);
-        res.json([]);
-    });
+
+    var missing = util.requires([
+        { name: 'access_token', value: req.query.access_token }
+    ]);
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    tokenService.validateAccessToken(req.query.access_token)
+
+        .then(function(isValid){
+            if(!isValid) {
+                next(new Http403Error(config.get('errors:invalidAccessToken'), 'Invalid access token.'));
+            } else {
+                return userService.getAll();
+            }
+        })
+
+        .then(function(users){
+            if(users) {
+                res.json(users);
+            }
+        })
+
+        .catch(function(error) {
+            logger.error(error);
+            res.json([]);
+        });
 }

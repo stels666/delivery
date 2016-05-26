@@ -7,7 +7,8 @@ properties = {
     clientId: { type: String, required: true, unique: true },
     clientSecret: { type: String, required: true, unique: true },
     creationDate: { type: Date, default: new Date(), required: true },
-    enabled: { type: Boolean, default: true }
+    enabled: { type: Boolean, default: true },
+    native: { type: Boolean, default: false }
 };
 
 schema = new mongoose.Schema(properties);
@@ -35,6 +36,8 @@ schema.methods = {
         this.clientId = util.generateKey(2);
         this.clientSecret = util.generateKey(3);
         this.creationDate = new Date();
+        this.enabled = true;
+        this.native = false;
 
         return this;
     }

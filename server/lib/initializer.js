@@ -37,7 +37,11 @@ function _defaultPermissions(models) {
 }
 
 function _defaultApplications(models) {
-    return [models.Application.newInstance()];
+    var nativeApp = models.Application.newInstance();
+
+    nativeApp.native = true;
+
+    return [nativeApp];
 }
 
 /**

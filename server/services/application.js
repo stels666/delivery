@@ -4,6 +4,20 @@ var Application = require('models/application'),
 module.exports = {
 
     /**
+     * Get by id
+     *
+     * @param id
+     * @returns {Promise}
+     */
+    get: function(id){
+        return new Promise(function(resolve, reject) {
+            Application.findById(id, function(err, app) {
+                err ? reject(err) : resolve(app);
+            });
+        });
+    },
+
+    /**
      * Get application by client id and client secret.
      *
      * @param clientId {String}
