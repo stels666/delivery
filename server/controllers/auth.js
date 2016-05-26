@@ -146,7 +146,7 @@ function _processGetAuthAccessToken(req, res, next) {
  * @param res
  * @private
  */
-function _processGetAuthRefreshToken(req, res) {
+function _processGetAuthRefreshToken(req, res, next) {
 
     var missing = util.requires([
         { name: 'client_id', value: req.query.client_id},
@@ -161,6 +161,10 @@ function _processGetAuthRefreshToken(req, res) {
     tokenService.getTokenByRefreshToken(req.query.refresh_token)
         .then(function(_token) {
             if(!_token) {
+                throw new Http403Error(config.get('errors:tokenNotFound'), 'Token not found.');
+            }
+
+            if(_token.isExpired()) {
                 throw new Http403Error(config.get('errors:invalidAccessToken'), 'Invalid access token.');
             }
 
@@ -225,17 +229,54 @@ function _processGetAuthRefreshToken(req, res) {
  * @param res
  * @private
  */
-function _processGetAuthValidateToken(req, res) {
+function _processGetAuthValidateToken(req, res, next) {
 
     var missing = util.requires([
         { name: 'access_token', value: req.query.access_token}
-    ]);
+    ]), token;
 
     if(missing.length > 0) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    res.json({
-        valid: true
-    });
+    tokenService.getTokenByAccessToken(req.query.access_token)
+
+        .then(function(_token) {
+            if(!_token) {
+                throw new Http403Error(config.get('errors:tokenNotFound'), 'Token not found.');
+            }
+
+            token = _token;
+            return applicationService.get(_token.applicationId);
+        })
+
+        .then(function(_application){
+            if(!_application) {
+                throw new Http403Error(config.get('errors:applicationNotFound'), 'Application not found.');
+            }
+
+            if(!_application.enabled) {
+                throw new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.');
+            }
+
+            return userService.get(token.userId);
+        })
+
+        .then(function(_user) {
+            if(!_user) {
+                throw new Http403Error(config.get('errors:userNotFound'), 'User not found.');
+            }
+
+            if(!_user.enabled) {
+                throw new Http403Error(config.get('errors:userDisabled'), 'User disabled.');
+            }
+
+            res.json({
+                valid: !token.isExpired()
+            });
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
 }

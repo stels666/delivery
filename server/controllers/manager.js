@@ -23,7 +23,11 @@ module.exports = {
             Promise.resolve(token)
 
                 .then(function(_token) {
-                    if(!_token || _token.isExpired()) {
+                    if(!_token) {
+                        throw new Http403Error(config.get('errors:tokenNotFound'), 'Token not found.');
+                    }
+
+                    if(_token.isExpired()) {
                         throw new Http403Error(config.get('errors:invalidAccessToken'), 'Invalid access token.');
                     }
 

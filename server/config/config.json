@@ -35,7 +35,8 @@
     "userDisabled": "1005",
     "incorrectUserPassword": "1006",
     "invalidAccessToken": "1007",
-    "canNotCreateToken": "1008"
+    "canNotCreateToken": "1008",
+    "tokenNotFound": "1009"
   },
 
   "keys": {
