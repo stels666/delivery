@@ -66,7 +66,7 @@ schema.methods = {
     /**
      * Get json response form.
      *
-     * @returns {{accessToken: string, expiresIn: number, refreshToken: string}}
+     * @returns {Object}
      */
     toResponse: function(full) {
         var response = {

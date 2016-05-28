@@ -326,6 +326,7 @@ function _processGetAuthValidateToken(req, res, next) {
  * @private
  */
 function _processGetAllTokens(req, res, next) {
+
     var missing = util.requires([
         { name: 'access_token', value: req.query.access_token }
     ]), application;
@@ -371,6 +372,7 @@ function _processGetAllTokens(req, res, next) {
  * @private
  */
 function _processGetSingleToken(req, res, next) {
+
     var missing = util.requires([
         { name: 'id', value: req.params.id},
         { name: 'access_token', value: req.query.access_token }

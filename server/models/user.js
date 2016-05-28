@@ -53,6 +53,27 @@ schema.pre('save', function(next) {
 schema.methods = {
 
     /**
+     * Get json response form.
+     *
+     * @returns {Object}
+     */
+    toResponse: function(full) {
+        var response = {
+            email: this.email,
+            firstName: this.firstName,
+            secondName: this.secondName
+        };
+
+        if(full) {
+            response.id = this._id;
+            response.enabled = this.enabled;
+            response.permissions = util.listToResponse(this.permissions, full);
+        }
+
+        return response;
+    },
+
+    /**
      * Compare password
      *
      * @param pass
