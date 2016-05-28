@@ -382,7 +382,7 @@ function _processGetSingleToken(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenPermissionChain(req.query.access_token, Permission.SUPER)
+    manager.accessTokenPermissionChain(req.query.access_token, [Permission.SUPER, Permission.TOKEN_GET])
 
         .then(function(_result) {
             application = _result.application;

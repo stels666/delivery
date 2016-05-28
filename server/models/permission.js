@@ -13,6 +13,10 @@ schema = new mongoose.Schema(properties);
 schema.statics.all = function(){
     return [
         Permission.SUPER,
+
+        Permission.TOKEN_GET,
+        Permission.TOKEN_REMOVE,
+
         Permission.USER_GET,
         Permission.USER_CREATE,
         Permission.USER_EDIT,
@@ -44,6 +48,10 @@ schema.methods = {
 Permission = mongoose.model('Permission', schema);
 
 Permission.SUPER = new Permission({ key: 'SUPER', description: 'Access to all resources.'});
+
+Permission.TOKEN_GET = new Permission({ key: 'TOKEN_GET', description: 'Access to token(s).'});
+Permission.TOKEN_REMOVE = new Permission({ key: 'TOKEN_REMOVE', description: 'Access to remove token(s).'});
+
 Permission.USER_GET = new Permission({ key: 'USER_GET', description: 'Access to user(s).'});
 Permission.USER_CREATE = new Permission({ key: 'USER_CREATE', description: 'Access to create user(s).'});
 Permission.USER_EDIT = new Permission({ key: 'USER_EDIT', description: 'Access to edit user(s).'});
