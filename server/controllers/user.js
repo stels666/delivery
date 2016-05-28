@@ -10,6 +10,7 @@ var Http400Error = require('errors/Http400Error'),
 
 module.exports = function(app) {
     app.get('/user/:id', _processGetUser);
+    app.post('/user/create', _processCreateUser);
 };
 
 /**
@@ -67,7 +68,7 @@ function _processGetSingleUser(req, res, next) {
         })
 
         .then(function(_user){
-            res.json(_user.toResponse(application.native));
+            res.json(_user ? _user.toResponse(application.native) : null);
         })
 
         .catch(function(error) {
@@ -113,7 +114,46 @@ function _processGetAllUser(req, res, next) {
         })
 
         .then(function(_users){
-            res.json(util.listToResponse(_users, application.native));
+            res.json(_users ? util.listToResponse(_users, application.native) : []);
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
+}
+
+
+/**
+ * Create user.
+ *
+ * @param req
+ * @param res
+ * @param next
+ * @private
+ */
+function _processCreateUser(req, res, next) {
+
+    var missing = util.requires([
+        { name: 'access_token', value: req.query.access_token }
+    ]), application;
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.USER_CREATE ])
+
+        .then(function(_result) {
+            application = _result.application;
+            return userService.validateAndCreate(req.body);
+        })
+
+        .then(function(_user){
+            return userService.save(_user);
+        })
+
+        .then(function(_user){
+            res.json(_user ? _user.toResponse(application.native) : null);
         })
 
         .catch(function(error) {
