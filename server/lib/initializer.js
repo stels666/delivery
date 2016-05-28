@@ -5,15 +5,14 @@ var Promise = require('promise'),
 /**
  *
  * @param models
- * @param permissions
  * @returns {User[]}
  * @private
  */
-function _defaultUsers(models, permissions) {
+function _defaultUsers(models) {
 
     var admin = new models.User({ email: 'admin@admin.com', password: 'admin', firstName: 'admin', secondName: 'admin' });
 
-    admin.addPermissions(permissions);
+    admin.addPermissions([models.Permission.SUPER]);
 
     return [admin];
 }
@@ -25,21 +24,15 @@ function _defaultUsers(models, permissions) {
  * @private
  */
 function _defaultPermissions(models) {
-
-    var permissions = [],
-        raw = config.get('permissions');
-
-    for(var i = 0, max = raw.length; i < max; i += 1) {
-        permissions.push(new models.Permission({ key: raw[i].key, description: raw[i].description }));
-    };
-
-    return permissions;
+    return models.Permission.all();
 }
 
 function _defaultApplications(models) {
     var nativeApp = models.Application.newInstance();
 
     nativeApp.native = true;
+    nativeApp.clientId = 'admin';
+    nativeApp.clientSecret = 'admin';
 
     return [nativeApp];
 }
@@ -83,11 +76,9 @@ module.exports = {
 
         logger.info('Try to save default entities to db.');
 
-        var permissions = _defaultPermissions(models);
-
         return Promise.all([
-            _saveAll(permissions),
-            _saveAll(_defaultUsers(models, permissions)),
+            _saveAll(_defaultPermissions(models)),
+            _saveAll(_defaultUsers(models)),
             _saveAll(_defaultApplications(models))
         ]);
     }

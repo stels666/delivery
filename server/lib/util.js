@@ -3,9 +3,15 @@ var randtoken = require('rand-token'),
     format = require('string-format'),
     Promise = require('promise'),
     bcrypt = require('bcrypt'),
-    DeliveryError = require('errors/Http500Error');
+    DeliveryError = require('errors/Http500Error'),
+    util = require('util');
 
 module.exports = {
+
+    /**
+     * Node util.
+     */
+    node: util,
 
     /**
      * Convert list objects to response.

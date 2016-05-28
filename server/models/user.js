@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     util = require('lib/util'),
     Promise = require('Promise'),
+    Permission = require('models/permission'),
     schema,
     properties;
 
@@ -91,10 +92,24 @@ schema.methods = {
      */
     isAccessAllowed: function(permissions) {
         var _this = this;
+
         return new Promise(function(resolve, reject) {
-            for(var i = 0, max = _this.permissions.length; i < max; i += 1 ){
-                if(_this.permissions[i].key === permissions) {
-                    resolve(true);
+
+            if(permissions != null){
+
+                for(var i = 0, max = _this.permissions.length; i < max; i += 1 ) {
+
+                    if(util.node.isArray(permissions)) {
+
+                        for(var j = 0, _max = permissions.length; j < _max; j += 1 ) {
+                            if(_this.permissions[i].key === permissions[j].key) {
+                                resolve(true);
+                            }
+                        }
+
+                    } else if(permissions instanceof Permission && _this.permissions[i].key === permissions.key) {
+                        resolve(true);
+                    }
                 }
             }
             resolve(false);

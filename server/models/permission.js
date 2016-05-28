@@ -1,6 +1,7 @@
 var mongoose = require('mongoose'),
     schema,
-    properties;
+    properties,
+    Permission;
 
 properties = {
     key: { type: String, required: true, unique: true},
@@ -9,8 +10,18 @@ properties = {
 
 schema = new mongoose.Schema(properties);
 
-schema.methods = {
-
+schema.statics.all = function(){
+    return [
+        Permission.SUPER,
+        Permission.OWNER,
+        Permission.USER_GET
+    ];
 }
 
-module.exports = mongoose.model('Permission', schema);
+Permission = mongoose.model('Permission', schema);
+
+Permission.SUPER = new Permission({ key: 'SUPER', description: 'Access to all resources.'});
+Permission.OWNER = new Permission({ key: 'OWNER_GET', description: 'Access to object(s) if owner.'});
+Permission.USER_GET = new Permission({ key: 'USER_GET', description: 'Access to user(s).'});
+
+module.exports = Permission;

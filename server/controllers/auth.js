@@ -6,7 +6,8 @@ var Http400Error = require('errors/Http400Error'),
     tokenService = require('services/token'),
     applicationService = require('services/application'),
     userService = require('services/user'),
-    manager = require('controllers/manager');
+    manager = require('controllers/manager'),
+    Permission = require('models/permission');
 
 
 module.exports = function(app) {
@@ -333,7 +334,7 @@ function _processGetAllTokens(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenPermissionChain(req.query.access_token, 'USER_GET')
+    manager.accessTokenPermissionChain(req.query.access_token, Permission.SUPER)
 
         .then(function(_result) {
             application = _result.application;
@@ -379,7 +380,7 @@ function _processGetSingleToken(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenChain(req.query.access_token)
+    manager.accessTokenPermissionChain(req.query.access_token, Permission.SUPER)
 
         .then(function(_result) {
             application = _result.application;
