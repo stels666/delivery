@@ -15,6 +15,7 @@ var express = require('express'),
 function _defineControllers() {
     require('controllers/auth')(app);
     require('controllers/user')(app);
+    require('controllers/application')(app);
 }
 
 /**

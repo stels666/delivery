@@ -22,10 +22,14 @@ module.exports = {
     listToResponse: function(list, full) {
         var resp = [];
 
+
+        if(list != null && this.node.isArray(list))
         for(var i = 0, max = list.length; i < max; i += 1) {
             if(list[i].toResponse != null && typeof list[i].toResponse === 'function') {
                 resp.push(list[i].toResponse(full));
             }
+        } else if(list != null && list.toResponse != null && typeof list.toResponse === 'function') {
+            resp.push(list.toResponse(full));
         }
 
         return resp;

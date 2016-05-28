@@ -18,6 +18,19 @@ module.exports = {
     },
 
     /**
+     * Get all
+     *
+     * @returns {Promise}
+     */
+    getAll: function(){
+        return new Promise(function(resolve, reject) {
+            Application.find({}, function(err, apps) {
+                err ? reject(err) : resolve(apps);
+            });
+        });
+    },
+
+    /**
      * Get application by client id and client secret.
      *
      * @param clientId {String}

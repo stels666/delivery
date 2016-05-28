@@ -40,6 +40,17 @@ schema.methods = {
         this.native = false;
 
         return this;
+    },
+
+    toResponse: function(full) {
+        return {
+            id: this._id,
+            clientId: this.clientId,
+            clientSecret: this.clientSecret,
+            creationDate: this.creationDate,
+            enabled: this.enabled,
+            native: this.native
+        };
     }
 };
 

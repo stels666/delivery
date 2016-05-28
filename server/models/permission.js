@@ -17,6 +17,11 @@ schema.statics.all = function(){
         Permission.TOKEN_GET,
         Permission.TOKEN_REMOVE,
 
+        Permission.APPLICATION_GET,
+        Permission.APPLICATION_CREATE,
+        Permission.APPLICATION_EDIT,
+        Permission.APPLICATION_REMOVE,
+
         Permission.USER_GET,
         Permission.USER_CREATE,
         Permission.USER_EDIT,
@@ -51,6 +56,11 @@ Permission.SUPER = new Permission({ key: 'SUPER', description: 'Access to all re
 
 Permission.TOKEN_GET = new Permission({ key: 'TOKEN_GET', description: 'Access to token(s).'});
 Permission.TOKEN_REMOVE = new Permission({ key: 'TOKEN_REMOVE', description: 'Access to remove token(s).'});
+
+Permission.APPLICATION_GET = new Permission({ key: 'APPLICATION_GET', description: 'Access to application(s).'});
+Permission.APPLICATION_CREATE = new Permission({ key: 'APPLICATION_CREATE', description: 'Access to create application(s).'});
+Permission.APPLICATION_EDIT = new Permission({ key: 'APPLICATION_EDIT', description: 'Access to edit application(s).'});
+Permission.APPLICATION_REMOVE = new Permission({ key: 'APPLICATION_REMOVE', description: 'Access to remove application(s).'});
 
 Permission.USER_GET = new Permission({ key: 'USER_GET', description: 'Access to user(s).'});
 Permission.USER_CREATE = new Permission({ key: 'USER_CREATE', description: 'Access to create user(s).'});
