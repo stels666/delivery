@@ -7,7 +7,8 @@ var Http400Error = require('errors/Http400Error'),
     applicationService = require('services/application'),
     userService = require('services/user'),
     manager = require('controllers/manager'),
-    Permission = require('models/permission');
+    Permission = require('models/permission'),
+    Token = require('models/token');
 
 
 module.exports = function(app) {
@@ -131,15 +132,22 @@ function _processGetAuthAccessToken(req, res, next) {
                 throw new Http403Error(config.get('errors:incorrectUserPassword'), 'Incorrect user password.');
             }
 
-            return tokenService.createToken(user, application);
+            return Token.newInstance(user, application)
         })
 
-        .then(function(token) {
-            if(!token) {
+        .then(function(_token) {
+            if(!_token) {
+                throw new Http500Error(config.get('errors:canNotCreateToken'), 'Can not create token.');
+            }
+            return tokenService.save(_token);
+        })
+
+        .then(function(_token) {
+            if(!_token) {
                 throw new Http500Error(config.get('errors:canNotCreateToken'), 'Can not create token.');
             }
 
-            res.json(token.toResponse(application.native));
+            res.json(_token.toResponse(application.native));
         })
 
         .catch(function(err) {

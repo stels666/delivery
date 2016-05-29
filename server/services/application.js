@@ -1,5 +1,6 @@
 var Application = require('models/application'),
-    Promise = require('Promise');
+    Promise = require('Promise'),
+    manager = require('services/manager');
 
 module.exports = {
 
@@ -13,14 +14,12 @@ module.exports = {
      * @returns {Application}
      */
     validateAndCreate: function(properties) {
-        return new Promise(function(resolve, reject) {
-            var application = new Application().fill();
-
-            application.name = properties.name;
-            application.enabled = properties.enabled;
-            application.native = properties.native;
-
-            resolve(application);
+        return manager.validateAndCreate(Application, properties, function(entity, properties) {
+            entity.fill()
+            entity.name = properties.name;
+            entity.enabled = properties.enabled;
+            entity.native = properties.native;
+            return entity;
         });
     },
 
@@ -31,11 +30,7 @@ module.exports = {
      * @returns {Promise}
      */
     get: function(id){
-        return new Promise(function(resolve, reject) {
-            Application.findById(id, function(err, app) {
-                err ? reject(err) : resolve(app);
-            });
-        });
+        return manager.get(Application, id);
     },
 
     /**
@@ -44,11 +39,7 @@ module.exports = {
      * @returns {Promise}
      */
     getAll: function(){
-        return new Promise(function(resolve, reject) {
-            Application.find({}, function(err, apps) {
-                err ? reject(err) : resolve(apps);
-            });
-        });
+        return manager.getAll(Application);
     },
 
     /**
@@ -73,11 +64,7 @@ module.exports = {
      * @returns {Application}
      */
     save: function(application) {
-        return new Promise(function(resolve, reject) {
-            application.save(function(err, obj) {
-                err ? reject(err) : resolve(obj);
-            });
-        });
+        return manager.save(application);
     }
 
 };

@@ -1,5 +1,6 @@
 var Token = require('models/token'),
-    Promise = require('Promise');
+    Promise = require('Promise'),
+    manager = require('services/manager');
 
 module.exports = {
 
@@ -9,11 +10,7 @@ module.exports = {
      * @returns {Promise}
      */
     get: function(id) {
-        return new Promise(function(resolve, reject) {
-            Token.findById(id, function(err, obj) {
-                err ? reject(err) : resolve(obj);
-            });
-        });
+        return manager.get(Token, id);
     },
 
     /**
@@ -22,24 +19,17 @@ module.exports = {
      * @returns {Promise}
      */
     getAll: function() {
-        return new Promise(function(resolve, reject) {
-            Token.find({}, function(err, objs) {
-                err ? reject(err) : resolve(objs ? objs : []);
-            });
-        });
+        return manager.getAll(Token);
     },
 
     /**
-     * Create new filled token.
+     * Save new token.
      *
-     * @param user {User}
+     * @param token
+     * @returns {*}
      */
-    createToken: function (user, application) {
-        return new Promise(function(resolve, reject) {
-            Token.newInstance(user, application).save(function(err, obj) {
-                err ? reject(err) : resolve(obj);
-            });
-        });
+    save: function(token) {
+        return manager.save(token);
     },
 
     /**

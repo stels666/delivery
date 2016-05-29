@@ -27,6 +27,34 @@ module.exports = {
                 err ? reject(err) : resolve(objs ? objs : []);
             });
         });
-    }
+    },
+
+    /**
+     * Save object.
+     *
+     * @param entity
+     * @returns {Promise}
+     */
+    save: function(entity) {
+        return new Promise(function(resolve, reject) {
+            entity.save(function(err, obj) {
+                err ? reject(err) : resolve(obj);
+            });
+        });
+    },
+
+    /**
+     * Validate properties and create object by type.
+     * @param type
+     * @param properties
+     * @param fill {Function} return filled object.
+     * @returns {Promise}
+     */
+    validateAndCreate: function(type, properties, fill) {
+        return new Promise(function(resolve, reject) {
+            var entity = new type();
+            resolve(fill(entity, properties));
+        });
+    },
 
 };
