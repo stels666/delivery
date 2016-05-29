@@ -2,10 +2,8 @@ var Http400Error = require('errors/Http400Error'),
     Http403Error = require('errors/Http403Error'),
     util = require('lib/util'),
     config = require('config'),
-    tokenService = require('services/token'),
-    applicationService = require('services/application'),
-    userService = require('services/user'),
-    Promise = require('Promise');
+    Promise = require('Promise'),
+    factory = require('services/factory');
 
 module.exports = {
 
@@ -31,7 +29,7 @@ module.exports = {
                     }
 
                     token = _token;
-                    return applicationService.get(_token.applicationId);
+                    return factory.getApplicationService().get(_token.applicationId);
                 })
 
                 .then(function(_application){
@@ -44,7 +42,7 @@ module.exports = {
                     }
 
                     application = _application;
-                    return userService.get(token.userId);
+                    return factory.getUserService().get(token.userId);
                 })
 
                 .then(function(_user) {
@@ -81,7 +79,7 @@ module.exports = {
                         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: accessToken.');
                     }
 
-                    return tokenService.getTokenByAccessToken(_accessToken);
+                    return factory.getTokenService().getTokenByAccessToken(_accessToken);
                 })
 
                 .then(function(_token) {
@@ -117,7 +115,7 @@ module.exports = {
                         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: accessToken.');
                     }
 
-                    return tokenService.getTokenByAccessToken(_accessToken);
+                    return factory.getTokenService().getTokenByAccessToken(_accessToken);
                 })
 
                 .then(function(_token) {

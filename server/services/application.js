@@ -1,70 +1,58 @@
 var Application = require('models/application'),
-    Promise = require('Promise'),
-    manager = require('services/manager');
+    AbstractService = require('services/abstract'),
+    util = require('lib/util');
 
-module.exports = {
+util.node.inherits(ApplicationService, AbstractService);
 
-    /**
-     * Validate and create new instance by properties.
-     *
-     * @param properties {Object}
-     * @param properties.name {String}
-     * @param properties.enabled {Boolean}
-     * @param properties.native {Boolean}
-     * @returns {Application}
-     */
-    validateAndCreate: function(properties) {
-        return manager.validateAndCreate(Application, properties, function(entity, properties) {
-            entity.fill()
-            entity.name = properties.name;
-            entity.enabled = properties.enabled;
-            entity.native = properties.native;
-            return entity;
-        });
-    },
+/**
+ *
+ * @constructor
+ */
+function ApplicationService() {
+    AbstractService.call(this, Application);
+}
 
-    /**
-     * Get by id
-     *
-     * @param id
-     * @returns {Promise}
-     */
-    get: function(id){
-        return manager.get(Application, id);
-    },
+/**
+ * Validate and create new instance by properties.
+ *
+ * @param properties {Object}
+ * @param properties.name {String}
+ * @param properties.enabled {Boolean}
+ * @param properties.native {Boolean}
+ * @returns {Promise}
+ */
+ApplicationService.prototype.validateAndCreate = function(properties) {
+   //TODO: validate
+    return this.newPromise(function(resolve) {
+        var entity = new Application().fill();
 
-    /**
-     * Get all
-     *
-     * @returns {Promise}
-     */
-    getAll: function(){
-        return manager.getAll(Application);
-    },
+        entity.name = properties.name;
+        entity.enabled = properties.enabled;
+        entity.native = properties.native;
 
-    /**
-     * Get application by client id and client secret.
-     *
-     * @param clientId {String}
-     * @param clientSecret {String}
-     * @returns {Promise}
-     */
-    getByClientIdAndSecret: function(clientId, clientSecret){
-        return new Promise(function(resolve, reject) {
-            Application.findOne({clientId: clientId, clientSecret: clientSecret}, function(err, app) {
-                err ? reject(err) : resolve(app);
-            });
-        });
-    },
-
-    /**
-     * Save application.
-     *
-     * @param user {Application}
-     * @returns {Application}
-     */
-    save: function(application) {
-        return manager.save(application);
-    }
-
+        resolve(entity);
+    });
 };
+
+/**
+ * Get application by client id and client secret.
+ *
+ * @param clientId {String}
+ * @param clientSecret {String}
+ * @returns {Promise}
+ */
+
+ApplicationService.prototype.getByClientIdAndSecret = function(clientId, clientSecret){
+    return this.newPromise(function(resolve, reject) {
+        Application.findOne({clientId: clientId, clientSecret: clientSecret}, function(err, app) {
+            err ? reject(err) : resolve(app);
+        });
+    });
+};
+
+
+ApplicationService.newInstance = function() {
+    return new ApplicationService();
+};
+
+module.exports = ApplicationService;

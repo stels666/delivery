@@ -1,8 +1,8 @@
 var Permission = require('models/permission'),
     AbstractService = require('services/abstract'),
-    util = require('util');
+    util = require('lib/util');
 
-util.inherits(PermissionService, AbstractService);
+util.node.inherits(PermissionService, AbstractService);
 
 /**
  *
@@ -16,10 +16,10 @@ function PermissionService() {
  * Get permissions by keys.
  *
  * @param keys {String[]}
- * @returns {Permission[]}
+ * @returns {Promise}
  */
 PermissionService.prototype.getByKeys = function(keys) {
-    return new this._Promise(function(resolve, reject) {
+    return this.newPromise(function(resolve, reject) {
         if(keys == null || keys.length === 0) {
             resolve([]);
         }
@@ -38,6 +38,6 @@ PermissionService.prototype.getByKeys = function(keys) {
 
 PermissionService.newInstance = function() {
     return new PermissionService();
-}
+};
 
 module.exports = PermissionService;

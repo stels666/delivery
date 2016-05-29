@@ -3,12 +3,10 @@ var Http400Error = require('errors/Http400Error'),
     Http500Error = require('errors/Http500Error'),
     util = require('lib/util'),
     config = require('config'),
-    tokenService = require('services/token'),
-    applicationService = require('services/application'),
-    userService = require('services/user'),
     manager = require('controllers/manager'),
     Permission = require('models/permission'),
-    Token = require('models/token');
+    Token = require('models/token'),
+    factory = require('services/factory');
 
 
 module.exports = function(app) {
@@ -99,7 +97,7 @@ function _processGetAuthAccessToken(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    applicationService.getByClientIdAndSecret(req.query.client_id, req.query.client_secret)
+    factory.getApplicationService().getByClientIdAndSecret(req.query.client_id, req.query.client_secret)
         .then(function(_application){
 
             if(!_application) {
@@ -111,7 +109,7 @@ function _processGetAuthAccessToken(req, res, next) {
             }
 
             application = _application;
-            return userService.getByEmail(req.query.username);
+            return factory.getUserService().getByEmail(req.query.username);
         })
 
         .then(function(_user) {
@@ -139,7 +137,7 @@ function _processGetAuthAccessToken(req, res, next) {
             if(!_token) {
                 throw new Http500Error(config.get('errors:canNotCreateToken'), 'Can not create token.');
             }
-            return tokenService.save(_token);
+            return factory.getTokenService().save(_token);
         })
 
         .then(function(_token) {
@@ -188,7 +186,7 @@ function _processGetAuthRefreshToken(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    tokenService.getTokenByRefreshToken(req.query.refresh_token)
+    factory.getTokenService().getTokenByRefreshToken(req.query.refresh_token)
         .then(function(_token) {
             if(!_token) {
                 throw new Http403Error(config.get('errors:tokenNotFound'), 'Token not found.');
@@ -199,7 +197,7 @@ function _processGetAuthRefreshToken(req, res, next) {
             }
 
             oldToken = _token;
-            return applicationService.getByClientIdAndSecret(req.query.client_id, req.query.client_secret);
+            return factory.getApplicationService().getByClientIdAndSecret(req.query.client_id, req.query.client_secret);
         })
 
         .then(function(_application){
@@ -213,7 +211,7 @@ function _processGetAuthRefreshToken(req, res, next) {
             }
 
             application = _application;
-            return userService.get(oldToken.userId);
+            return factory.getUserService().get(oldToken.userId);
         })
 
         .then(function(_user) {
@@ -225,7 +223,7 @@ function _processGetAuthRefreshToken(req, res, next) {
                 throw new Http403Error(config.get('errors:userDisabled'), 'User disabled.');
             }
 
-            return tokenService.createToken(_user, application);
+            return factory.getTokenService().createToken(_user, application);
         })
 
         .then(function(_token) {
@@ -270,7 +268,7 @@ function _processGetAuthValidateToken(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    tokenService.getTokenByAccessToken(req.query.access_token)
+    factory.getTokenService().getTokenByAccessToken(req.query.access_token)
 
         .then(function(_token) {
             if(!_token) {
@@ -278,7 +276,7 @@ function _processGetAuthValidateToken(req, res, next) {
             }
 
             token = _token;
-            return applicationService.get(_token.applicationId);
+            return factory.getApplicationService().get(_token.applicationId);
         })
 
         .then(function(_application){
@@ -290,7 +288,7 @@ function _processGetAuthValidateToken(req, res, next) {
                 throw new Http403Error(config.get('errors:applicationDisabled'), 'Application disabled.');
             }
 
-            return userService.get(token.userId);
+            return factory.getUserService().get(token.userId);
         })
 
         .then(function(_user) {
@@ -347,7 +345,7 @@ function _processGetAllTokens(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return tokenService.getAll();
+            return factory.getTokenService().getAll();
         })
 
         .then(function(_tokens){
@@ -394,7 +392,7 @@ function _processGetSingleToken(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return tokenService.get(req.params.id);
+            return factory.getTokenService().get(req.params.id);
         })
 
         .then(function(_token){

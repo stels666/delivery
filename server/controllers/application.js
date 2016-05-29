@@ -1,7 +1,7 @@
 var Http400Error = require('errors/Http400Error'),
     util = require('lib/util'),
     config = require('config'),
-    applicationService = require('services/application'),
+    factory = require('services/factory'),
     manager = require('controllers/manager'),
     Permission = require('models/permission');
 
@@ -52,7 +52,7 @@ function _processGetAllApplications(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return applicationService.getAll();
+            return factory.getApplicationService().getAll();
         })
 
         .then(function(_applications){
@@ -87,7 +87,7 @@ function _processGetSingleApplication(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return applicationService.get(req.params.id);
+            return factory.getApplicationService().get(req.params.id);
         })
 
         .then(function(_application){
@@ -119,11 +119,11 @@ function _processCreateApplication(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return applicationService.validateAndCreate(req.body);
+            return factory.getApplicationService().validateAndCreate(req.body);
         })
 
         .then(function(_application){
-            return applicationService.save(_application);
+            return factory.getApplicationService().save(_application);
         })
 
         .then(function(_application){

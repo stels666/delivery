@@ -2,11 +2,9 @@ var Http400Error = require('errors/Http400Error'),
     Http403Error = require('errors/Http403Error'),
     config = require('config'),
     util = require('lib/util'),
-    logger = require('lib/logger')(module),
-    userService = require('services/user'),
-    tokenService = require('services/token'),
     manager = require('controllers/manager'),
-    Permission = require('models/permission');
+    Permission = require('models/permission'),
+    factory = require('services/factory');
 
 module.exports = function(app) {
     app.get('/user/:id', _processGetUser);
@@ -64,7 +62,7 @@ function _processGetSingleUser(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return userService.get(req.params.id);
+            return factory.getUserService().get(req.params.id);
         })
 
         .then(function(_user){
@@ -110,7 +108,7 @@ function _processGetAllUser(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return userService.getAll();
+            return factory.getUserService().getAll();
         })
 
         .then(function(_users){
@@ -145,11 +143,11 @@ function _processCreateUser(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return userService.validateAndCreate(req.body);
+            return factory.getUserService().validateAndCreate(req.body);
         })
 
         .then(function(_user){
-            return userService.save(_user);
+            return factory.getUserService().save(_user);
         })
 
         .then(function(_user){
