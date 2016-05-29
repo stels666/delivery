@@ -7,7 +7,7 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/permission/private/get/:id', _processGetPermission);
+    app.get('/private/permission/get/:id', _processGetPermission);
 };
 
 /**

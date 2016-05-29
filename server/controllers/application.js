@@ -7,8 +7,8 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/application/private/get/:id', _processGetApplication);
-    app.post('/application/private/create', _processCreateApplication);
+    app.get('/private/application/get/:id', _processGetApplication);
+    app.post('/private/application/create', _processCreateApplication);
 };
 
 /**

@@ -7,8 +7,8 @@ var Http400Error = require('errors/Http400Error'),
     factory = require('services/factory');
 
 module.exports = function(app) {
-    app.get('/user/private/get/:id', _processGetUser);
-    app.post('/user/private/create', _processCreateUser);
+    app.get('/private/user/get/:id', _processGetUser);
+    app.post('/private/user/create', _processCreateUser);
 };
 
 /**
