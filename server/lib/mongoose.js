@@ -13,6 +13,10 @@ function _define(){
     require('models/application');
     require('models/token');
     require('models/permission');
+    require('models/client');
+    require('models/product');
+    require('models/settlement');
+    require('models/address');
 }
 
 module.exports = {

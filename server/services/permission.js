@@ -1,49 +1,43 @@
 var Permission = require('models/permission'),
-    Promise = require('Promise'),
-    manager = require('services/manager');
+    AbstractService = require('services/abstract'),
+    util = require('util');
 
-module.exports = {
+util.inherits(PermissionService, AbstractService);
 
-    /**
-     * Get permission by id.
-     *
-     * @returns {Promise}
-     */
-    get: function(id) {
-        return manager.get(Permission, id);
-    },
+/**
+ *
+ * @constructor
+ */
+function PermissionService() {
+    AbstractService.call(this, Permission);
+}
 
-    /**
-     * Get all permissions.
-     *
-     * @returns {Promise}
-     */
-    getAll: function() {
-        return manager.getAll(Permission);
-    },
+/**
+ * Get permissions by keys.
+ *
+ * @param keys {String[]}
+ * @returns {Permission[]}
+ */
+PermissionService.prototype.getByKeys = function(keys) {
+    return new this._Promise(function(resolve, reject) {
+        if(keys == null || keys.length === 0) {
+            resolve([]);
+        }
 
-    /**
-     * Get permissions by keys.
-     *
-     * @param keys {String[]}
-     * @returns {Permission[]}
-     */
-    getByKeys: function(keys) {
-        return new Promise(function(resolve, reject) {
-            if(keys == null || keys.length === 0) {
-                resolve([]);
-            }
+        var query = [];
 
-            var query = [];
+        for(var i = 0, max = keys.length; i < max; i += 1) {
+            query.push({ key: keys[i] });
+        }
 
-            for(var i = 0, max = keys.length; i < max; i += 1) {
-                query.push({ key: keys[i] });
-            }
-
-            Permission.find({}).or(query).exec(function(err, objs){
-                err ? reject(err) : resolve(objs);
-            });
+        Permission.find({}).or(query).exec(function(err, objs){
+            err ? reject(err) : resolve(objs);
         });
-    }
-
+    });
 };
+
+PermissionService.newInstance = function() {
+    return new PermissionService();
+}
+
+module.exports = PermissionService;

@@ -55,6 +55,6 @@ module.exports = {
             var entity = new type();
             resolve(fill(entity, properties));
         });
-    },
+    }
 
 };

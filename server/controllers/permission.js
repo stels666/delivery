@@ -1,7 +1,7 @@
 var Http400Error = require('errors/Http400Error'),
     util = require('lib/util'),
     config = require('config'),
-    permissionService = require('services/permission'),
+    factory = require('services/factory'),
     manager = require('controllers/manager'),
     Permission = require('models/permission');
 
@@ -44,7 +44,7 @@ function _processGetAllPermissions(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return permissionService.getAll();
+            return factory.getPermissionService().getAll();
         })
 
         .then(function(_permission){
@@ -71,7 +71,7 @@ function _processGetSinglePermission(req, res, next) {
 
         .then(function(_result) {
             application = _result.application;
-            return permissionService.get(req.params.id);
+            return factory.getPermissionService().get(req.params.id);
         })
 
         .then(function(_permission){

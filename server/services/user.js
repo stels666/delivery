@@ -32,13 +32,13 @@ module.exports = {
             user.secondName = properties.secondName;
             user.enabled = properties.enabled;
 
-            permissionService.getByKeys(properties.permissions)
-                .then(function(objs){
-                    user.addPermissions(objs);
+            //permissionService.getByKeys(properties.permissions)
+            //    .then(function(objs){
+            //        user.addPermissions(objs);
                     resolve(user);
-                }, function(err) {
-                   reject(err);
-                });
+            //    }, function(err) {
+            //       reject(err);
+            //    });
         });
     },
 
