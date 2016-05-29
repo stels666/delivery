@@ -14,6 +14,8 @@ schema.statics.all = function(){
     return [
         Permission.SUPER,
 
+        Permission.PERMISSION_GET,
+
         Permission.TOKEN_GET,
         Permission.TOKEN_REMOVE,
 
@@ -53,6 +55,8 @@ schema.methods = {
 Permission = mongoose.model('Permission', schema);
 
 Permission.SUPER = new Permission({ key: 'SUPER', description: 'Access to all resources.'});
+
+Permission.PERMISSION_GET = new Permission({ key: 'PERMISSION_GET', description: 'Access to permission(s).'});
 
 Permission.TOKEN_GET = new Permission({ key: 'TOKEN_GET', description: 'Access to token(s).'});
 Permission.TOKEN_REMOVE = new Permission({ key: 'TOKEN_REMOVE', description: 'Access to remove token(s).'});

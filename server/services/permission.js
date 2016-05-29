@@ -1,7 +1,26 @@
 var Permission = require('models/permission'),
-    Promise = require('Promise');
+    Promise = require('Promise'),
+    manager = require('services/manager');
 
 module.exports = {
+
+    /**
+     * Get permission by id.
+     *
+     * @returns {Promise}
+     */
+    get: function(id) {
+        return manager.get(Permission, id);
+    },
+
+    /**
+     * Get all permissions.
+     *
+     * @returns {Promise}
+     */
+    getAll: function() {
+        return manager.getAll(Permission);
+    },
 
     /**
      * Get permissions by keys.

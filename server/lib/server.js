@@ -16,6 +16,7 @@ function _defineControllers() {
     require('controllers/auth')(app);
     require('controllers/user')(app);
     require('controllers/application')(app);
+    require('controllers/permission')(app);
 }
 
 /**
