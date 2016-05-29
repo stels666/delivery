@@ -4,6 +4,7 @@ var mongoose = require('mongoose'),
     properties;
 
 properties = {
+    name: { type: String, required: true, unique: true },
     clientId: { type: String, required: true, unique: true },
     clientSecret: { type: String, required: true, unique: true },
     creationDate: { type: Date, default: new Date(), required: true },
@@ -45,6 +46,7 @@ schema.methods = {
     toResponse: function(full) {
         return {
             id: this._id,
+            name: this.name,
             clientId: this.clientId,
             clientSecret: this.clientSecret,
             creationDate: this.creationDate,

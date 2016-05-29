@@ -30,6 +30,7 @@ function _defaultPermissions(models) {
 function _defaultApplications(models) {
     var nativeApp = models.Application.newInstance();
 
+    nativeApp.name = 'admin';
     nativeApp.native = true;
     nativeApp.clientId = 'admin';
     nativeApp.clientSecret = 'admin';

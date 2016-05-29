@@ -8,6 +8,7 @@ var Http400Error = require('errors/Http400Error'),
 
 module.exports = function(app) {
     app.get('/application/:id', _processGetApplication);
+    app.post('/application/create', _processCreateApplication);
 };
 
 /**
@@ -87,6 +88,42 @@ function _processGetSingleApplication(req, res, next) {
         .then(function(_result) {
             application = _result.application;
             return applicationService.get(req.params.id);
+        })
+
+        .then(function(_application){
+            res.json(_application ? _application.toResponse(application.native) : null);
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
+}
+
+/**
+ * Create new application.
+ * @param req
+ * @param res
+ * @param next
+ * @private
+ */
+function _processCreateApplication(req, res, next) {
+    var missing = util.requires([
+        { name: 'access_token', value: req.query.access_token }
+    ]), application;
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.APPLICATION_CREATE ])
+
+        .then(function(_result) {
+            application = _result.application;
+            return applicationService.validateAndCreate(req.body);
+        })
+
+        .then(function(_application){
+            return applicationService.save(_application);
         })
 
         .then(function(_application){
