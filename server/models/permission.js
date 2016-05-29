@@ -27,7 +27,12 @@ schema.statics.all = function(){
         Permission.USER_GET,
         Permission.USER_CREATE,
         Permission.USER_EDIT,
-        Permission.USER_REMOVE
+        Permission.USER_REMOVE,
+
+        Permission.TARIFF_GET,
+        Permission.TARIFF_CREATE,
+        Permission.TARIFF_EDIT,
+        Permission.TARIFF_REMOVE
     ];
 }
 
@@ -70,5 +75,10 @@ Permission.USER_GET = new Permission({ key: 'USER_GET', description: 'Access to 
 Permission.USER_CREATE = new Permission({ key: 'USER_CREATE', description: 'Access to create user(s).'});
 Permission.USER_EDIT = new Permission({ key: 'USER_EDIT', description: 'Access to edit user(s).'});
 Permission.USER_REMOVE = new Permission({ key: 'USER_REMOVE', description: 'Access to remove user(s).'});
+
+Permission.TARIFF_GET = new Permission({ key: 'TARIFF_GET', description: 'Access to tariff(s).'});
+Permission.TARIFF_CREATE = new Permission({ key: 'TARIFF_CREATE', description: 'Access to create tariff(s).'});
+Permission.TARIFF_EDIT = new Permission({ key: 'TARIFF_EDIT', description: 'Access to edit tariff(s).'});
+Permission.TARIFF_REMOVE = new Permission({ key: 'TARIFF_REMOVE', description: 'Access to remove tariff(s).'});
 
 module.exports = Permission;

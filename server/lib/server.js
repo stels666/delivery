@@ -17,6 +17,7 @@ function _defineControllers() {
     require('controllers/user')(app);
     require('controllers/application')(app);
     require('controllers/permission')(app);
+    require('controllers/tariff')(app);
 }
 
 /**

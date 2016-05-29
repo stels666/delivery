@@ -17,6 +17,7 @@ function _define(){
     require('models/product');
     require('models/settlement');
     require('models/address');
+    require('models/tariff');
 }
 
 module.exports = {

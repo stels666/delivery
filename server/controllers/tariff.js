@@ -7,38 +7,39 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/application/:id', _processGetApplication);
-    app.post('/application/create', _processCreateApplication);
+    app.get('/tariff/:id', _processGetTariff);
+    app.post('/tariff/create', _processCreateTariff);
+    app.post('/tariff/calculate', _processCalculateTariff);
 };
 
 /**
- * Process get application request, 2 cases:
- *  1. Get single application by id;
- *  2. Get all applications.
+ * Process get tariff request, 2 cases:
+ *  1. Get single tariff by id;
+ *  2. Get all tariffs.
  *
  * @param req
  * @param res
  * @param next
  * @private
  */
-function _processGetApplication(req, res, next) {
+function _processGetTariff(req, res, next) {
     if(req.params.id === 'all') {
-        return _processGetAllApplications(req, res, next);
+        return _processGetAllTariff(req, res, next);
     } else if(req.params.id != null && req.params.id.trim().length > 0) {
-        return _processGetSingleApplication(req, res, next);
+        return _processGetSingleTariff(req, res, next);
     } else {
         throw new Http400Error(config.get('errors:missingParameters'), 'Route parameter "id" is incorrect, available values: all or id of application.');
     }
 }
 
 /**
- * Get all application.
+ * Get all tariffs.
  * @param req
  * @param res
  * @param next
  * @private
  */
-function _processGetAllApplications(req, res, next) {
+function _processGetAllTariff(req, res, next) {
 
     var missing = util.requires([
         { name: 'access_token', value: req.query.access_token }
@@ -48,15 +49,15 @@ function _processGetAllApplications(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.APPLICATION_GET ])
+    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.TARIFF_GET ])
 
         .then(function(_result) {
             application = _result.application;
-            return factory.getApplicationService().getAll();
+            return factory.getTariffService().getAll();
         })
 
-        .then(function(_applications){
-            res.json(_applications ? util.listToResponse(_applications, application.native) : []);
+        .then(function(_tariffs){
+            res.json(_tariffs ? util.listToResponse(_tariffs, application.native) : []);
         })
 
         .catch(function(error) {
@@ -65,13 +66,13 @@ function _processGetAllApplications(req, res, next) {
 }
 
 /**
- * Get application by id.
+ * Get tariff by id.
  * @param req
  * @param res
  * @param next
  * @private
  */
-function _processGetSingleApplication(req, res, next) {
+function _processGetSingleTariff(req, res, next) {
 
     var missing = util.requires([
         { name: 'id', value: req.params.id},
@@ -82,15 +83,15 @@ function _processGetSingleApplication(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.APPLICATION_GET ])
+    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.TARIFF_GET ])
 
         .then(function(_result) {
             application = _result.application;
-            return factory.getApplicationService().get(req.params.id);
+            return factory.getTariffService().get(req.params.id);
         })
 
-        .then(function(_application){
-            res.json(_application ? _application.toResponse(application.native) : null);
+        .then(function(_tariff){
+            res.json(_tariff ? _tariff.toResponse(application.native) : null);
         })
 
         .catch(function(error) {
@@ -98,14 +99,8 @@ function _processGetSingleApplication(req, res, next) {
         });
 }
 
-/**
- * Create new application.
- * @param req
- * @param res
- * @param next
- * @private
- */
-function _processCreateApplication(req, res, next) {
+function _processCreateTariff(req, res, next) {
+
     var missing = util.requires([
         { name: 'access_token', value: req.query.access_token }
     ]), application;
@@ -114,22 +109,26 @@ function _processCreateApplication(req, res, next) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.APPLICATION_CREATE ])
+    manager.accessTokenPermissionChain(req.query.access_token, [ Permission.SUPER, Permission.TARIFF_CREATE ])
 
         .then(function(_result) {
             application = _result.application;
-            return factory.getApplicationService().validateAndCreate(req.body);
+            return factory.getTariffService().validateAndCreate(req.body);
         })
 
-        .then(function(_application){
-            return factory.getApplicationService().save(_application);
+        .then(function(_tariff){
+            return factory.getTariffService().save(_tariff);
         })
 
-        .then(function(_application){
-            res.json(_application ? _application.toResponse(application.native) : null);
+        .then(function(_tariff){
+            res.json(_tariff ? _tariff.toResponse(application.native) : null);
         })
 
         .catch(function(error) {
             next(error);
         });
+}
+
+function _processCalculateTariff(req, res, next) {
+    res.json({ cost: 100 });
 }

@@ -3,6 +3,7 @@ var mongoose = require('mongoose'),
     properties;
 
 properties = {
+    countryCode: { type: String, required: true},
     country: { type: String, required: true},
     areaType: { type: String},
     areaTypeShort: { type: String},
