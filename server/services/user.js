@@ -1,7 +1,6 @@
 var User = require('models/user'),
     AbstractService = require('services/abstract'),
-    util = require('lib/util'),
-    factory = require('services/factory');
+    util = require('lib/util');
 
 util.node.inherits(UserService, AbstractService);
 
@@ -37,14 +36,9 @@ UserService.prototype.validateAndCreate = function(properties) {
         user.firstName = properties.firstName;
         user.secondName = properties.secondName;
         user.enabled = properties.enabled;
+        user.permissions.push(properties.permissions);
 
-        factory.getPermissionService().getByKeys(properties.permissions)
-            .then(function(objs){
-                user.addPermissions(objs);
-                resolve(user);
-            }, function(err) {
-               reject(err);
-            });
+        resolve(user);
     });
 };
 

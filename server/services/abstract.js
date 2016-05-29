@@ -1,7 +1,7 @@
-var util = require('lib/util');
+var util = require('lib/util'),
+    Promise = require('Promise');;
 
 function AbstractService(type, populate) {
-    this._Promise = require('Promise');
     this.type = type;
 
     if(populate != null && !util.node.isArray(populate)) {
@@ -24,7 +24,7 @@ AbstractService.prototype.populateToString = function() {
  * @returns {Promise}
  */
 AbstractService.prototype.newPromise = function(fn) {
-   return new this._Promise(fn);
+   return new Promise(fn);
 };
 
 
@@ -35,7 +35,7 @@ AbstractService.prototype.newPromise = function(fn) {
 AbstractService.prototype.getAll = function() {
     var _this = this;
 
-    return new this._Promise(function(resolve, reject) {
+    return this.newPromise(function(resolve, reject) {
         var query =_this.type.find({});
 
         if(_this.populate) {
@@ -56,7 +56,7 @@ AbstractService.prototype.getAll = function() {
 AbstractService.prototype.get = function(id) {
     var _this = this;
 
-    return new this._Promise(function(resolve, reject) {
+    return this.newPromise(function(resolve, reject) {
         var query = _this.type.findById(id);
 
         if(_this.populate) {
@@ -77,7 +77,7 @@ AbstractService.prototype.get = function(id) {
 AbstractService.prototype.save = function(entity) {
     var _this = this;
 
-    return new this._Promise(function(resolve, reject) {
+    return this.newPromise(function(resolve, reject) {
         entity.save(function(err, obj) {
             if(err) {
                 reject(err);
