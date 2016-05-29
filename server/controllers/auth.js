@@ -10,8 +10,8 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/auth', _processAuth);
-    app.get('/auth/:id', _processGetToken);
+    app.get('/auth/public', _processAuth);
+    app.get('/auth/private/get/:id', _processGetToken);
 };
 
 

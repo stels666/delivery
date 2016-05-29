@@ -7,9 +7,9 @@ var Http400Error = require('errors/Http400Error'),
 
 
 module.exports = function(app) {
-    app.get('/tariff/:id', _processGetTariff);
-    app.post('/tariff/create', _processCreateTariff);
-    app.post('/tariff/calculate', _processCalculateTariff);
+    app.get('/tariff/private/get/:id', _processGetTariff);
+    app.post('/tariff/private/create', _processCreateTariff);
+    app.post('/tariff/public/calculate', _processCalculateTariff);
 };
 
 /**
