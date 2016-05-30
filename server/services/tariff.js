@@ -66,6 +66,14 @@ TariffService.prototype.calculate = function(fromSettlement, toSettlement, cost,
     //TODO: validate
     return this.newPromise(function(resolve, reject){
 
+        if(!fromSettlement) {
+            return reject(new Error('From Settlement is undefined.'));
+        }
+
+        if(!toSettlement) {
+            return reject(new Error('To Settlement is undefined.'));
+        }
+
         var coefficient = 0,
             flag = true;
 
@@ -179,15 +187,15 @@ TariffService.prototype.getByParameters = function(cost, weight, length, width, 
         var volume = length * width * height;
 
         Tariff.findOne({})
-            //.where('weightMin').gt(weight)
-            //.where('weightMax').lte(weight)
-            //.where('volumeMin').gt(volume)
-            //.where('volumeMin').lte(volume)
-            //.where('costMin').gt(cost)
-            //.where('costMax').lte(cost)
-            //.where('lengthMax').lte(length)
-            //.where('widthMax').lte(width)
-            //.where('heightMax').lte(height)
+            .where('weightMin').lt(weight)
+            .where('weightMax').gte(weight)
+            .where('volumeMin').lt(volume)
+            .where('volumeMax').gte(volume)
+            .where('costMin').lt(cost)
+            .where('costMax').gte(cost)
+            .where('lengthMax').gte(length)
+            .where('widthMax').gte(width)
+            .where('heightMax').gte(height)
             .exec( function(err, tariff) {
 
                 err ? reject(err) : resolve(tariff);
