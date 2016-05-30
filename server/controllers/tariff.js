@@ -130,5 +130,22 @@ function _processCreateTariff(req, res, next) {
 }
 
 function _processCalculateTariff(req, res, next) {
-    res.json({ cost: 100 });
+
+    var missing = util.requires([
+        { name: 'fromSettlementId', value: req.body.fromSettlementId },
+        { name: 'toSettlementId', value: req.body.toSettlementId },
+        { name: 'length', value: req.body.length },
+        { name: 'width', value: req.body.width },
+        { name: 'height', value: req.body.height },
+        { name: 'cost', value: req.body.cost },
+        { name: 'weight', value: req.body.weight }
+    ]);
+
+    if(missing.length > 0) {
+        throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
+    }
+
+    res.json({
+        cost: 100
+    });
 }
