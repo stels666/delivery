@@ -28,6 +28,30 @@ schema = new mongoose.Schema(properties);
 
 schema.methods = {
 
+    fullName: function() {
+        var name = this.country;
+        name += this.fullArea() ? ', ' + this.fullArea() : '';
+        name += this.fullDistrict() ? ', ' + this.fullDistrict() : '';
+        name += ', ' + this.fullSettlement();
+        return name;
+    },
+
+    fullArea: function() {
+        var name = this.areaType ? this.areaType + ' ' : '';
+        name += this.area ? this.area : undefined;
+        return name;
+    },
+
+    fullDistrict: function() {
+        var name = this.districtType ? this.districtType + ' ' : '';
+        name += this.district ? this.district : undefined;
+        return name;
+    },
+
+    fullSettlement: function() {
+        return this.settlementType + ' ' + this.name;
+    },
+
     /**
      * Get json response form.
      *

@@ -139,13 +139,29 @@ function _processCalculateTariff(req, res, next) {
         { name: 'height', value: req.body.height },
         { name: 'cost', value: req.body.cost },
         { name: 'weight', value: req.body.weight }
-    ]);
+    ]), fromSettlement;
 
     if(missing.length > 0) {
         throw new Http400Error(config.get('errors:missingParameters'), 'Missing parameters: ' + missing.join(', ') + '.');
     }
 
-    res.json({
-        cost: 100
-    });
+    factory.getSettlementService().get(req.body.fromSettlementId)
+
+        .then(function(_fromSettlement) {
+            fromSettlement = _fromSettlement;
+            return factory.getSettlementService().get(req.body.toSettlementId)
+        })
+
+        .then(function(_toSettlement) {
+            return factory.getTariffService().calculate(fromSettlement, _toSettlement,
+                req.body.cost, req.body.weight, req.body.length, req.body.width, req.body.height);
+        })
+
+        .then(function(_data) {
+            res.json(_data);
+        })
+
+        .catch(function(error) {
+            next(error);
+        });
 }

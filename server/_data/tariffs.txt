@@ -1,0 +1,14 @@
+127.0.0.1:3000/private/tariff/create?access_token=
+
+{
+  "weightMin": "0",
+  "weightMax": "100",
+  "volumeMin": "0",
+  "volumeMax": "1000000",
+  "costMin": "0",
+  "costMax": "10000000",
+  "lengthMax": "100",
+  "widthMax": "100",
+  "heightMax": "100",
+  "tariff": "50000"
+}

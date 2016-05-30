@@ -1,0 +1,120 @@
+127.0.0.1:3000/private/settlement/create?access_token=
+
+"Гродно": "574ca908a9cec6f9022dc7f0"
+"Волковыск": "574ca928a9cec6f9022dc7f1"
+"Свислочь": "574ca93da9cec6f9022dc7f2"
+"Минск": "574ca94da9cec6f9022dc7f3"
+"Слуцк": "574ca97aa9cec6f9022dc7f4"
+"Несвиж": "574ca99ca9cec6f9022dc7f5"
+
+{
+    "countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Гродненская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Гродненский",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Гродно",
+	"postcode": "111111",
+	"latitude": "111111",
+	"longitude": "111111",
+	"coefficient": "1"
+}
+
+{
+    "countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Гродненская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Волковыский",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Волковыск",
+	"postcode": "122222",
+	"latitude": "122222",
+	"longitude": "122222",
+	"coefficient": "1.2",
+	"main": ""
+}
+
+{
+    "countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Гродненская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Свислочский",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Свислочь",
+	"postcode": "133333",
+	"latitude": "133333",
+	"longitude": "133333",
+	"coefficient": "1.3",
+	"main": ""
+}
+
+{
+	"countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Минская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Минский",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Минск",
+	"postcode": "222222",
+	"latitude": "222222",
+	"longitude": "222222",
+	"coefficient": "1"
+}
+
+{
+	"countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Минская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Слуцкий",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Слуцк",
+	"postcode": "233333",
+	"latitude": "233333",
+	"longitude": "233333",
+	"coefficient": "1.4",
+	"main": ""
+}
+
+{
+	"countryCode": "BY",
+	"country": "Беларусь",
+	"areaType": "область",
+	"areaTypeShort": "обл",
+	"area": "Минская",
+	"districtType": "район",
+	"districtTypeShort": "р-н",
+	"district": "Несвижский",
+	"settlementType": "город",
+	"settlementTypeShort": "г",
+	"name": "Несвиж",
+	"postcode": "244444",
+	"latitude": "244444",
+	"longitude": "244444",
+	"coefficient": "1.5"
+	"main": ""
+}
